@@ -212,14 +212,14 @@ class Graph:
     def neighbours(self, vertex,visited=[]):
         """
         Given a vertex, returns a list of vertices reachable from that vertex.
-
+        vertices will not return if they are visited
         >>> g = Graph([1,2,3], [(1,2), (1,3)])
         >>> g.neighbours(1)
         [2, 3]
         """
 
-        if vertex not in self.adjacency_dict.keys():
-            raise ValueError("Vertex {} is not in graph".format(vertex))
+        # if vertex not in self.adjacency_dict.keys():
+        #     raise ValueError("Vertex {} is not in graph".format(vertex))
 
         return [neighbour for neighbour in self.adjacency_dict[vertex] if neighbour not in visited] 
 

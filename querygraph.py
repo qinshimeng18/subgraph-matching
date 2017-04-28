@@ -120,8 +120,9 @@ class QueryGraph:
         else:
             self.adjacency_dict[vertex_from].remove(vertex_to)
             self.adjacency_dict[vertex_to].remove(vertex_from)
-
-    def neighbours(self, vertex):
+    def has_children(self,i,u):
+        return True if self.neighbours(i,visited = [u]) else False
+    def neighbours(self, vertex,visited = []):
         """
         Given a vertex, returns a list of vertices reachable from that vertex.
 
@@ -132,5 +133,4 @@ class QueryGraph:
 
         if vertex not in self.adjacency_dict.keys():
             raise ValueError("Vertex {} is not in graph".format(vertex))
-
-        return list(self.adjacency_dict[vertex])
+        return [neighbour for neighbour in self.adjacency_dict[vertex].keys() if neighbour not in visited] 

@@ -1,0 +1,9 @@
+#python
+*.py[cod]
+*.json
+*.xml
+*.txt
+*.dtd
+*.csv
+*.png
+*.ipynb

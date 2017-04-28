@@ -7,8 +7,10 @@ from querygraph import QueryGraph
 import networkx as nx
 import matplotlib.pyplot as plt
 import copy
-from collections import deque
+from collections import deque,OrderedDict
 import sys
+import timeit
+from pprint import pprint
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -26,21 +28,20 @@ def splitvertices(matching):
     # print u, '#####', v
     return list(inner), list(outer)
 
-
 def formatMatching(G, matching):
-# G=nx.grid_2d_graph(2,1)  #4x4 grid
-# plt.subplot(221)
-# nx.draw(G,pos,font_size=8)
-# plt.subplot(222)
-# nx.draw(G,pos,node_color='k',node_size=0,with_labels=False)
-# plt.subplot(223)
-# nx.draw(G,pos,node_color='g',node_size=250,with_labels=False,width=6)
-# #最后一幅子图转为有向图
-# plt.subplot(224)
-# H=G.to_directed()
-# nx.draw(H,pos,node_color='b',node_size=20,with_labels=False)
-# plt.savefig("four_grids.png")
-# plt.show()
+    # G=nx.grid_2d_graph(2,1)  #4x4 grid
+    # plt.subplot(221)
+    # nx.draw(G,pos,font_size=8)
+    # plt.subplot(222)
+    # nx.draw(G,pos,node_color='k',node_size=0,with_labels=False)
+    # plt.subplot(223)
+    # nx.draw(G,pos,node_color='g',node_size=250,with_labels=False,width=6)
+    # #最后一幅子图转为有向图
+    # plt.subplot(224)
+    # H=G.to_directed()
+    # nx.draw(H,pos,node_color='b',node_size=20,with_labels=False)
+    # plt.savefig("four_grids.png")
+    # plt.show()
     inner, outer = splitvertices(matching)
     # print inner, outer
     pos = nx.spring_layout(G)
@@ -76,10 +77,9 @@ def formatMatching(G, matching):
     # # Convert to NetworkX
     # G = self.__toNetworkX()
 
-
 def edges_vertices_from_json(path):
     """
-    return:
+    return
         edges = [name,name]
         vertices = [(from,to)]
     """
@@ -107,7 +107,6 @@ def edges_vertices_from_json(path):
 
     return edges, vertices
 
-
 def networkx_graph(vertices,edges,name='default'):
     """
     利用networkx绘图
@@ -116,8 +115,8 @@ def networkx_graph(vertices,edges,name='default'):
     G.add_edges_from(edges)
     degree = nx.degree_histogram(G)
     # 返回图中所有节点的度分布序列
-    x = range(len(degree))  # 生成x轴序列，从1到最大度
-    y = [z / float(sum(degree)) for z in degree]
+    # x = range(len(degree))  # 生成x轴序列，从1到最大度
+    # y = [z / float(sum(degree)) for z in degree]
     # print x
     # 将频次转换为频率，这用到Python的一个小技巧：列表内涵，Python的确很方便：）
     # plt.loglog(x, y, color="blue", linewidth=2)
@@ -144,7 +143,6 @@ def networkx_graph(vertices,edges,name='default'):
     # print g.adjacency_dict
     # gg=nx.Graph()
     # gg.add_edges_from(g.adjacency_dict)
-
 
 def label_edges_vertices_from_json(path):
     """
@@ -177,15 +175,18 @@ def label_edges_vertices_from_json(path):
     del dblp
     return edges, vertices
 
-
 def set_query_graph():
     """
     vertex id is number, category and label matters
     Returns:
         [query graph] -- [description]
     """
-    vertices = {'1': {'category': 'paper', 'weight': 1}, '2': {
-        'category': 'person', 'weight': 1}, '3': {'category': 'paper', 'weight': 1}, '4': {'category': 'paper', 'weight': 1}}
+    vertices = {
+        '1': {'category': 'paper', 'weight': 1}, 
+        '2': {'category': 'person', 'weight': 1},
+        '3': {'category': 'paper', 'weight': 1}, 
+        '4': {'category': 'paper', 'weight': 1}
+        }
     edges_weight = {
         '1': {
             '2': 0.3
@@ -205,103 +206,210 @@ def set_query_graph():
     q = QueryGraph(vertices, edges_weight, '1', False)
     return q
 
-
 def print_graph(g):
     print '边的数量： ', len(g.get_edges())
     print '点的数量： ', len(g.get_vertices())
     # print 'edges:   ',  dict(g.get_edges())
     # print 'edges:   ',  g.get_edges()
 
-
 def filter1_in_category_set(q):
     return q.category_list
+
 def gephi(edges):
     with open('gephi.csv','w') as f:
         for i in edges:
             f.write('\''+str(i[0])+'\''+','+'\''+str(i[1])+'\''+'\n')
 
+def bfs_query_graph(q):
+    """
+    [different layers in bfs search]
+    
+    Arguments:
+        q {[object]} -- [query graph]
+    
+    Returns:
+        [dict] -- [{layer_int:vertices}]
+    """
+    queue = deque(['1'])
+    while queue:
+        v = queue.popleft()
+    def bfs():
+        yield node
+    get_category(bfs())
+
+    return layers_vertices
+
+    # networkx_graph(edges,vertices)
+def children_lost(q,v,parent):
+    lost = 0 
+    for child in q.neighbours(v,visited=[parent]) :
+        lost += q.adjacency_dict[v][child]
+        children_lost(q,child,v)
+    return lost
+def judge(u,i,j,q,g):
+    if q.get_vertex_category(i) == g.get_vertex_category(j):
+        return q.adjacency_dict[u][i]
+    else:
+        False
+
+def isSame(u, v,q,g,visited = [],matched=[]):
+    print 'u:',u
+    print 'v:',v
+    print matched
+    children_u = q.neighbours(u,visited)
+    children_v = g.neighbours(v,visited)
+    matchArray = []
+    match_score = 0
+    lost_score = 0
+    matched.append(v)
+    for i in children_u:
+        i_matched = False # True if i has matched
+        print 'i: ',i
+        for j in children_v:
+            print 'j: ',j
+            print 'matched:',matched
+            print 'visited:',visited
+            if j not in matched and j not in visited:
+                judge_score = judge(u,i, j,q,g)
+                if(judge):
+                    i_matched = True
+                    matched.append(j)
+                    match_score += judge_score
+                    print 'matched score: ',match_score
+                    print 'lost score :   ',lost_score
+                    matchArray.append((i,j))
+                    break
+        if not i_matched:
+            print 'not match'
+            if q.has_children(i,u):
+                lost_score+=children_lost(q,i,u)
+            else:
+                lost_score += q.adjacency_dict[u][i]
+    for i in matchArray:
+        visited.extend([i[0],i[1]])
+        m,l = isSame(i[0], i[1],q,g,visited,matched)
+        match_score+=m
+        lost_score+=l
+    return match_score,lost_score
+
 def main():
-    path = 'json.json'
+    # create Data graph and Query graph
+    path = 'data.json'
     graph_focus = []
     edges, vertices = label_edges_vertices_from_json(path)
     g = Graph(vertices, edges, False)  # 边的数量会多一半
     q = set_query_graph()
+    u0 = '1' #the first node in query graph
     # 得到graph中所有的focus点（用category做比较）
     remove_num = 0
     for vertex in g.get_vertices():
         # print vertex,q.get_u0_category()
         if g.get_vertex_category(vertex) == q.get_u0_category():
             graph_focus.append(vertex)
-        # 对图进行修改
+        # delete vertices whose label are not in the query
         if g.get_vertex_category(vertex) not in filter1_in_category_set(q):
             g.remove_vertex(vertex)
             remove_num += 1
-    bfs = deque(graph_focus)
-    foucus_num = 0
-    for u in graph_focus:
-        # print 'u^^^^^^^^^^^^^^^^^^^^^^^^',u
-        foucus_num+=1
-        visited = set()
-        # 复制一个树
-        G = copy.deepcopy(g)
-        # 初始队列
-        queue = deque()
-        queue.append(u)
-        visited.add(u)
-        count = 0
-        # print '开始queue: ',queue
-        # print '开始visited: ',visited
-        while queue:
-            count+=1
-            # print '-------开始nfs---处理V，将v的邻居加入queue和visited中----'
-            # print 'step ',count
-            v = queue.popleft()
-            # print 'vertexv(当前循环节点): ',v
-            neighbours = G.neighbours(v, visited)
-            # print 'v的neighbours ',neighbours
-            visited = visited.union(neighbours)
-            queue.extend(neighbours)
-            # print '开始queue: ',len(queue),queue
-            # print '开始visited: ',len(visited),visited
-            for neighbour in neighbours:
-                neighbour_neighbours = G.neighbours(neighbour, visited)
-                # print 'neighbour_neighbours',len(neighbour_neighbours),neighbour_neighbours
-                visited = visited.union(neighbour_neighbours)
-                if neighbour_neighbours:
-                    queue.extend(neighbour_neighbours)
-            # print '结束visited: ',len(visited),visited
-            # print '结束queue: ',len(queue),queue
-        print '--------循环结束-------'
-        print 'count',count
-        print 'visited: ',len(visited)
-        break
-        # u_now = bfs.popleft()
-        # visited.append(u_now)
-        # neighbours = G.neighbours(u_now)
-        # delete_edges(neighbours,u_now)
-        # for neighbour in neighbours:
-        #     if g.get_vertex_category(neighbour) 交集 q.:
-        #         sum()
-        #     top[id:score]
+    focus_score = OrderedDict()
+    for v0 in graph_focus:
+        focus_score[v0] = isSame(u0,v0,q,g,[u0,v0],[])
+        print '-------------'
 
-        # bfs = []
-        # bfs.append(u)
-        # bfs+=G.neighbours(u)
-    #不能同时打开会重叠的
-    # qq=networkx_graph(q.get_vertices(),q.get_edges(),'q')
+        # break
+    pprint(focus_score)
     # gg=networkx_graph(g.get_vertices(),edges,'g')
-    # gephi graph_focus
-    gephi(edges)
-    print 'remove_num: ', remove_num
-    print 'graph_focus: ', len(graph_focus)
-    print 'foucus_num',foucus_num
-    print_graph(g)
-    print_graph(q)
-
-
 if __name__ == '__main__':
-    import timeit
+    # main()
     print(timeit.timeit("main()", setup="from __main__ import main", number=1))
-    # networkx_graph(edges,vertices)
-# if __name__ == '__main__':
-#     main()
+
+# def main():
+#     path = 'data.json'
+#     graph_focus = []
+#     edges, vertices = label_edges_vertices_from_json(path)
+#     g = Graph(vertices, edges, False)  # 边的数量会多一半
+#     q = set_query_graph()
+#     # 得到graph中所有的focus点（用category做比较）
+#     remove_num = 0
+#     for vertex in g.get_vertices():
+#         # print vertex,q.get_u0_category()
+#         if g.get_vertex_category(vertex) == q.get_u0_category():
+#             graph_focus.append(vertex)
+#         # 对图进行修改
+#         if g.get_vertex_category(vertex) not in filter1_in_category_set(q):
+#             g.remove_vertex(vertex)
+#             remove_num += 1
+#     bfs = deque(graph_focus)
+#     foucus_num = 0
+#     for v in graph_focus:
+#         # print 'v^^^^^^^^^^^^^^^^^^^^^^^^',v
+#         count = 0
+#         foucus_num+=1
+#         visited = set()
+#         # 复制一个树
+#         G = copy.deepcopy(g)
+#         # 初始队列
+#         queue = deque([v])
+#         visited.add(v)
+
+# #         for sub_vertex in G.neighbours(neighbour, visited):
+# #             for sub_query_vertex in q.neighbours(neighbour)
+# #             if G.get_vertex_category(sub_vertex) == q.get_category('1'):
+# # def get_union(u,v):
+# #     # return [(v1,v2)],[(u1,u2)],[(category,category)]
+# #     return {u1:[v1,v2],u2:[v1,v5]}
+
+# #         for q_vertex in q.neighbours(u,v):
+# #             vertices_union,u_union,categories = get_union(u,v)
+
+
+#         # print '开始queue: ',queue
+#         # print '开始visited: ',visited
+#         while queue:
+#             count+=1
+#             # print '-------开始nfs---处理V，将v的邻居加入queue和visited中----'
+#             # print 'step ',count
+#             # 弹出队列的第一个元素v
+#             v = queue.popleft()
+#             # print 'vertexv(当前循环节点): ',v
+#             # 得到在G中的临节点
+#             neighbours = G.neighbours(v, visited)
+#             # print 'v的neighbours ',neighbours
+#             # 将邻居结点加入队列和访问过list中去
+#             visited = visited.union(neighbours)
+#             queue.extend(neighbours)
+#             # print '开始queue: ',len(queue),queue
+#             # print '开始visited: ',len(visited),visited
+#             for neighbour in neighbours:
+#                 neighbour_neighbours = G.neighbours(neighbour, visited)
+#                 # print 'neighbour_neighbours',len(neighbour_neighbours),neighbour_neighbours
+#                 visited = visited.union(neighbour_neighbours)
+#                 if neighbour_neighbours:
+#                     queue.extend(neighbour_neighbours)
+#             # print '结束visited: ',len(visited),visited
+#             # print '结束queue: ',len(queue),queue
+#         print '--------循环结束-------'
+#         print 'count',count
+#         print 'visited: ',len(visited)
+#         break
+#         # u_now = bfs.popleft()
+#         # visited.append(u_now)
+#         # neighbours = G.neighbours(u_now)
+#         # delete_edges(neighbours,u_now)
+#         # for neighbour in neighbours:
+#         #     if g.get_vertex_category(neighbour) 交集 q.:
+#         #         sum()
+#         #     top[id:score]
+
+#         # bfs = []
+#         # bfs.append(u)
+#         # bfs+=G.neighbours(u)
+#     #不能同时打开会重叠的
+#     # qq=networkx_graph(q.get_vertices(),q.get_edges(),'q')
+#     # gg=networkx_graph(g.get_vertices(),edges,'g')
+#     # gephi graph_focus
+#     # gephi(edges)
+#     print 'remove_num: ', remove_num
+#     print 'graph_focus: ', len(graph_focus)
+#     print 'foucus_num',foucus_num
+#     print_graph(g)
+#     print_graph(q)
