@@ -1,1 +1,254 @@
-"{\n    \"dblp\": {\n        \"www\": [\n            {\n                \"@mdate\": \"2005-10-06\", \n                \"@key\": \"persons/Ley93\", \n                \"author\": \"Michael Ley\", \n                \"title\": \"DBLP.uni-trier.de: Computer Science Bibliography\", \n                \"url\": \"http://dblp.uni-trier.de/\", \n                \"year\": \"1993\"\n            }, \n            {\n                \"@mdate\": \"2005-10-06\", \n                \"@key\": \"persons/Ley2003\", \n                \"author\": \"Michael Ley\", \n                \"title\": \"ACM SIGMOD Contribution Award 2003 Acceptance Speech\", \n                \"year\": \"2003\", \n                \"url\": \"http://www.informatik.uni-trier.de/~ley/db/about/contributionaward03.html\"\n            }\n        ], \n        \"inproceedings\": [\n            {\n                \"@mdate\": \"2012-09-18\", \n                \"@key\": \"persons/Codd74\", \n                \"author\": \"E. F. Codd\", \n                \"title\": \"Seven Steps to Rendezvous with the Casual User.\", \n                \"month\": \"January\", \n                \"year\": \"1974\", \n                \"pages\": \"179-200\", \n                \"booktitle\": \"IFIP Working Conference Data Base Management\", \n                \"url\": \"db/conf/ds/dbm74.html#Codd74\", \n                \"note\": \"IBM Research Report RJ 1333, San Jose, California\", \n                \"cdrom\": \"DS/DS1974/P179.pdf\"\n            }, \n            {\n                \"@mdate\": \"2002-01-03\", \n                \"@key\": \"persons/JohnLM94\", \n                \"author\": [\n                    \"Werner John\", \n                    \"Dominik Ley\", \n                    \"Joachim Mller\"\n                ], \n                \"title\": \"ROSAR - Rule Oriented System for Analysis of Reflections on Printed Circuit Boards\", \n                \"pages\": \"40-43\", \n                \"year\": \"1994\", \n                \"booktitle\": \"Proc. 11th Int. Symposium on Electromagnetic Compatibility (EMC'94)\"\n            }\n        ], \n        \"article\": [\n            {\n                \"@mdate\": \"2002-01-03\", \n                \"@key\": \"persons/CoddD74\", \n                \"author\": [\n                    \"E. F. Codd\", \n                    \"C. J. Date\"\n                ], \n                \"title\": \"Interactive Support for Non-Programmers: The Relational and Network Approaches.\", \n                \"journal\": \"IBM Research Report, San Jose, California\", \n                \"volume\": \"RJ1400\", \n                \"month\": \"June\", \n                \"year\": \"1974\"\n            }, \n            {\n                \"@mdate\": \"2002-01-03\", \n                \"@key\": \"persons/Hall74\", \n                \"author\": \"Patrick A. V. Hall\", \n                \"title\": \"Common Subexpression Identification in General Algebraic Systems.\", \n                \"journal\": \"Technical Rep. UKSC 0060, IBM United Kingdom Scientific Centre\", \n                \"month\": \"November\", \n                \"year\": \"1974\"\n            }, \n            {\n                \"@mdate\": \"2002-01-03\", \n                \"@key\": \"persons/Codd81\", \n                \"author\": \"E. F. Codd\", \n                \"title\": \"The Capabilities of Relational Database Management Systems.\", \n                \"journal\": \"IBM Research Report, San Jose, California\", \n                \"month\": \"May\", \n                \"year\": \"1981\", \n                \"volume\": \"RJ3132\", \n                \"cdrom\": \"ibmTR/rj3132.pdf\", \n                \"ee\": \"db/labs/ibm/RJ3132.html\"\n            }, \n            {\n                \"@mdate\": \"2002-01-03\", \n                \"@key\": \"persons/Tresch96\", \n                \"author\": \"Markus Tresch\", \n                \"title\": \"Principles of Distributed Object Database Languages.\", \n                \"journal\": \"technical Report 248, ETH Zrich, Dept. of Computer Science\", \n                \"month\": \"July\", \n                \"year\": \"1996\"\n            }, \n            {\n                \"@mdate\": \"2016-09-08\", \n                \"@key\": \"persons/Codd72\", \n                \"@publtype\": \"informal publication\", \n                \"author\": \"E. F. Codd\", \n                \"title\": \"Relational Completeness of Data Base Sublanguages.\", \n                \"journal\": \"IBM Research Report\", \n                \"volume\": \"RJ987\", \n                \"month\": \"March\", \n                \"year\": \"1972\", \n                \"cdrom\": \"ibmTR/rj987.pdf\", \n                \"ee\": \"db/labs/ibm/RJ987.html\", \n                \"note\": \"republished on \\\"ACM SIGMOD Anthology\\\"\"\n            }, \n            {\n                \"@mdate\": \"2015-03-17\", \n                \"@key\": \"persons/Codd71a\", \n                \"author\": \"E. F. Codd\", \n                \"title\": \"Further Normalization of the Data Base Relational Model.\", \n                \"journal\": \"IBM Research Report, San Jose, California\", \n                \"volume\": \"RJ909\", \n                \"month\": \"August\", \n                \"year\": \"1971\"\n            }, \n            {\n                \"@mdate\": \"2002-01-03\", \n                \"@key\": \"persons/Codd71\", \n                \"author\": \"E. F. Codd\", \n                \"title\": \"Data Base Sublanguage Founded on the Relational Calculus.\", \n                \"journal\": \"IBM Research Report, San Jose, California\", \n                \"month\": \"July\", \n                \"volume\": \"RJ893\", \n                \"year\": \"1971\"\n            }, \n            {\n                \"@mdate\": \"2002-01-03\", \n                \"@key\": \"persons/Codd69\", \n                \"author\": \"E. F. Codd\", \n                \"title\": \"Derivability, Redundancy and Consistency of Relations Stored in Large Data Banks.\", \n                \"journal\": \"IBM Research Report, San Jose, California\", \n                \"volume\": \"RJ599\", \n                \"month\": \"August\", \n                \"year\": \"1969\", \n                \"cdrom\": \"ibmTR/rj599.pdf\", \n                \"ee\": \"db/labs/ibm/RJ599.html\"\n            }, \n            {\n                \"@mdate\": \"2002-01-03\", \n                \"@key\": \"persons/Codd71b\", \n                \"author\": \"E. F. Codd\", \n                \"title\": \"Normalized Data Base Structure: A Brief Tutorial.\", \n                \"journal\": \"IBM Research Report, San Jose, California\", \n                \"month\": \"November\", \n                \"year\": \"1971\", \n                \"volume\": \"RJ935\"\n            }, \n            {\n                \"@mdate\": \"2012-02-27\", \n                \"@key\": \"persons/CasperGGGHLR12\", \n                \"author\": [\n                    \"Markus Casper\", \n                    \"Gayane Grigoryan\", \n                    \"Oliver Gronz\", \n                    \"Oliver Gutjahr\", \n                    \"Gnther Heinemann\", \n                    \"Rita Ley\", \n                    \"Andreas Rock\"\n                ], \n                \"title\": \"Analysis of projected hydrological behavior of catchments based on signature indices\", \n                \"journal\": \"Hydrology and Earth System Sciences\", \n                \"volume\": \"16\", \n                \"pages\": \"409-421\", \n                \"year\": \"2012\", \n                \"ee\": \"http://dx.doi.org/10.5194/hess-16-409-2012\", \n                \"url\": \"http://dx.doi.org/10.5194/hess-16-409-2012\"\n            }, \n            {\n                \"@mdate\": \"2012-02-20\", \n                \"@key\": \"persons/LeyCHM11\", \n                \"author\": [\n                    \"Rita Ley\", \n                    \"Markus Casper\", \n                    \"Hugo Hellebrand\", \n                    \"Ralf Merz\"\n                ], \n                \"title\": \"Catchment classification by runoff behaviour with self-organizing maps (SOM)\", \n                \"journal\": \"Hydrology and Earth System Sciences\", \n                \"volume\": \"15\", \n                \"pages\": \"2947-2962\", \n                \"year\": \"2011\", \n                \"ee\": \"http://dx.doi.org/10.5194/hess-15-2947-2011\", \n                \"url\": \"http://dx.doi.org/10.5194/hess-15-2947-2011\"\n            }, \n            {\n                \"@mdate\": \"2011-12-29\", \n                \"@key\": \"persons/Ley95\", \n                \"@publtype\": \"informal publication\", \n                \"author\": \"Michael Ley\", \n                \"title\": \"DB&LP: A WWW Bibliography on Databases and Logic Programming\", \n                \"journal\": \"Compulog Newsletter\", \n                \"year\": \"1995\", \n                \"url\": \"http://www.informatik.uni-trier.de/~ley/db/about/compulog.ps\"\n            }, \n            {\n                \"@mdate\": \"2014-05-26\", \n                \"@key\": \"dblpnote/error\", \n                \"@publtype\": \"informal publication\", \n                \"title\": \"(error)\"\n            }, \n            {\n                \"@mdate\": \"2013-02-13\", \n                \"@key\": \"dblpnote/duplicate\", \n                \"@publtype\": \"informal publication\", \n                \"title\": \"(duplicate entry was deleted)\"\n            }, \n            {\n                \"@mdate\": \"2017-01-13\", \n                \"@key\": \"dblpnote/retracted\", \n                \"@publtype\": \"withdrawn\", \n                \"title\": \"paper retracted\"\n            }, \n            {\n                \"@mdate\": \"2013-02-10\", \n                \"@key\": \"dblpnote/withdrawn\", \n                \"@publtype\": \"informal publication\", \n                \"title\": \"(paper withdrawn)\"\n            }, \n            {\n                \"@mdate\": \"2013-02-12\", \n                \"@key\": \"dblpnote/neverpublished\", \n                \"@publtype\": \"informal publication\", \n                \"title\": \"(was never published)\"\n            }, \n            {\n                \"@mdate\": \"2013-02-12\", \n                \"@key\": \"dblpnote/ellipsis\", \n                \"@publtype\": \"informal publication\", \n                \"title\": \"\\u2026\"\n            }\n        ], \n        \"book\": {\n            \"@mdate\": \"2007-01-12\", \n            \"@key\": \"persons/Lions1996\", \n            \"author\": \"John Lions\", \n            \"title\": \"Lions' Commentary on UNIX 6th Edition, with Source Code\", \n            \"year\": \"1996\", \n            \"publisher\": \"Peer-to-Peer Communications\", \n            \"isbn\": \"1-57398-013-7\", \n            \"url\": \"http://www.lemis.com/grog/Documentation/Lions/index.html\"\n        }, \n        \"incollection\": [\n            {\n                \"@mdate\": \"2011-11-25\", \n                \"@key\": \"reference/algo/Makinen08\", \n                \"@publtype\": \"encyclopedia entry\", \n                \"author\": \"Veli Mkinen\", \n                \"title\": \"Compressed Suffix Array.\", \n                \"year\": \"2008\", \n                \"booktitle\": \"Encyclopedia of Algorithms\", \n                \"ee\": \"http://dx.doi.org/10.1007/978-0-387-30162-4_82\", \n                \"crossref\": \"reference/algo/2008\", \n                \"url\": \"db/reference/algo/algo2008.html#Makinen08\"\n            }, \n            {\n                \"@mdate\": \"2011-11-25\", \n                \"@key\": \"reference/algo/X08o\", \n                \"@publtype\": \"encyclopedia entry\", \n                \"title\": \"Atomic Scan.\", \n                \"year\": \"2008\", \n                \"booktitle\": \"Encyclopedia of Algorithms\", \n                \"ee\": \"http://dx.doi.org/10.1007/978-0-387-30162-4_41\", \n                \"crossref\": \"reference/algo/2008\", \n                \"url\": \"db/reference/algo/algo2008.html#X08o\"\n            }, \n            {\n                \"@mdate\": \"2016-04-28\", \n                \"@key\": \"reference/algo/Komusiewicz16\", \n                \"@publtype\": \"encyclopedia entry\", \n                \"author\": \"Christian Komusiewicz\", \n                \"title\": \"Kernelization, Partially Polynomial Kernels.\", \n                \"pages\": \"1028-1031\", \n                \"year\": \"2016\", \n                \"booktitle\": \"Encyclopedia of Algorithms\", \n                \"ee\": \"http://dx.doi.org/10.1007/978-1-4939-2864-4_530\", \n                \"url\": \"db/reference/algo/algo2016.html#Komusiewicz16\"\n            }, \n            {\n                \"@mdate\": \"2011-11-25\", \n                \"@key\": \"reference/algo/Huang08a\", \n                \"@publtype\": \"encyclopedia entry\", \n                \"author\": \"Li-Sha Huang\", \n                \"title\": \"General Equilibrium.\", \n                \"year\": \"2008\", \n                \"booktitle\": \"Encyclopedia of Algorithms\", \n                \"ee\": \"http://dx.doi.org/10.1007/978-0-387-30162-4_160\", \n                \"crossref\": \"reference/algo/2008\", \n                \"url\": \"db/reference/algo/algo2008.html#Huang08a\"\n            }, \n            {\n                \"@mdate\": \"2016-04-28\", \n                \"@key\": \"reference/algo/Korula16\", \n                \"@publtype\": \"encyclopedia entry\", \n                \"author\": \"Nitish Korula\", \n                \"title\": \"Orienteering Problems.\", \n                \"pages\": \"1481-1484\", \n                \"year\": \"2016\", \n                \"booktitle\": \"Encyclopedia of Algorithms\", \n                \"ee\": \"http://dx.doi.org/10.1007/978-1-4939-2864-4_540\", \n                \"url\": \"db/reference/algo/algo2016.html#Korula16\"\n            }\n        ]\n    }\n}"
+{
+    "dblp": {
+        "article": [{
+            "author": ["E. F. Codd", "C. J. Date"],
+            "journal": "IBM Research Report, San Jose, California",
+            "title": "Interactive Support for Non-Programmers: The Relational and Network Approaches.",
+            "month": "June",
+            "volume": "RJ1400",
+            "@key": "persons/CoddD74",
+            "@mdate": "2002-01-03",
+            "year": "1974"
+        }, {
+            "author": "Patrick A. V. Hall",
+            "journal": "Technical Rep. UKSC 0060, IBM United Kingdom Scientific Centre",
+            "title": "Common Subexpression Identification in General Algebraic Systems.",
+            "month": "November",
+            "@key": "persons/Hall74",
+            "@mdate": "2002-01-03",
+            "year": "1974"
+        }, {
+            "author": "E. F. Codd",
+            "ee": "db/labs/ibm/RJ3132.html",
+            "journal": "IBM Research Report, San Jose, California",
+            "title": "The Capabilities of Relational Database Management Systems.",
+            "month": "May",
+            "volume": "RJ3132",
+            "@key": "persons/Codd81",
+            "@mdate": "2002-01-03",
+            "year": "1981",
+            "cdrom": "ibmTR/rj3132.pdf"
+        }, {
+            "author": "Markus Tresch",
+            "journal": "technical Report 248, ETH Zrich, Dept. of Computer Science",
+            "title": "Principles of Distributed Object Database Languages.",
+            "month": "July",
+            "@key": "persons/Tresch96",
+            "@mdate": "2002-01-03",
+            "year": "1996"
+        }, {
+            "note": "republished on \"ACM SIGMOD Anthology\"",
+            "author": "E. F. Codd",
+            "ee": "db/labs/ibm/RJ987.html",
+            "journal": "IBM Research Report",
+            "title": "Relational Completeness of Data Base Sublanguages.",
+            "month": "March",
+            "volume": "RJ987",
+            "@key": "persons/Codd72",
+            "@mdate": "2016-09-08",
+            "year": "1972",
+            "cdrom": "ibmTR/rj987.pdf",
+            "@publtype": "informal publication"
+        }, {
+            "author": "E. F. Codd",
+            "journal": "IBM Research Report, San Jose, California",
+            "title": "Further Normalization of the Data Base Relational Model.",
+            "month": "August",
+            "volume": "RJ909",
+            "@key": "persons/Codd71a",
+            "@mdate": "2015-03-17",
+            "year": "1971"
+        }, {
+            "author": "E. F. Codd",
+            "journal": "IBM Research Report, San Jose, California",
+            "title": "Data Base Sublanguage Founded on the Relational Calculus.",
+            "month": "July",
+            "volume": "RJ893",
+            "@key": "persons/Codd71",
+            "@mdate": "2002-01-03",
+            "year": "1971"
+        }, {
+            "author": "E. F. Codd",
+            "ee": "db/labs/ibm/RJ599.html",
+            "journal": "IBM Research Report, San Jose, California",
+            "title": "Derivability, Redundancy and Consistency of Relations Stored in Large Data Banks.",
+            "month": "August",
+            "volume": "RJ599",
+            "@key": "persons/Codd69",
+            "@mdate": "2002-01-03",
+            "year": "1969",
+            "cdrom": "ibmTR/rj599.pdf"
+        }, {
+            "author": "E. F. Codd",
+            "journal": "IBM Research Report, San Jose, California",
+            "title": "Normalized Data Base Structure: A Brief Tutorial.",
+            "month": "November",
+            "volume": "RJ935",
+            "@key": "persons/Codd71b",
+            "@mdate": "2002-01-03",
+            "year": "1971"
+        }, {
+            "author": ["Markus Casper", "Gayane Grigoryan", "Oliver Gronz", "Oliver Gutjahr", "Gnther Heinemann", "Rita Ley", "Andreas Rock"],
+            "ee": "http://dx.doi.org/10.5194/hess-16-409-2012",
+            "journal": "Hydrology and Earth System Sciences",
+            "title": "Analysis of projected hydrological behavior of catchments based on signature indices",
+            "volume": "16",
+            "@key": "persons/CasperGGGHLR12",
+            "@mdate": "2012-02-27",
+            "url": "http://dx.doi.org/10.5194/hess-16-409-2012",
+            "year": "2012",
+            "pages": "409-421"
+        }, {
+            "author": ["Rita Ley", "Markus Casper", "Hugo Hellebrand", "Ralf Merz"],
+            "ee": "http://dx.doi.org/10.5194/hess-15-2947-2011",
+            "journal": "Hydrology and Earth System Sciences",
+            "title": "Catchment classification by runoff behaviour with self-organizing maps (SOM)",
+            "volume": "15",
+            "@key": "persons/LeyCHM11",
+            "@mdate": "2012-02-20",
+            "url": "http://dx.doi.org/10.5194/hess-15-2947-2011",
+            "year": "2011",
+            "pages": "2947-2962"
+        }, {
+            "author": "Michael Ley",
+            "url": "http://www.informatik.uni-trier.de/~ley/db/about/compulog.ps",
+            "journal": "Compulog Newsletter",
+            "title": "DB&LP: A WWW Bibliography on Databases and Logic Programming",
+            "@key": "persons/Ley95",
+            "@mdate": "2011-12-29",
+            "year": "1995",
+            "@publtype": "informal publication"
+        }, {
+            "@key": "dblpnote/error",
+            "@publtype": "informal publication",
+            "title": "(error)",
+            "@mdate": "2014-05-26"
+        }, {
+            "@key": "dblpnote/duplicate",
+            "@publtype": "informal publication",
+            "title": "(duplicate entry was deleted)",
+            "@mdate": "2013-02-13"
+        }, {
+            "@key": "dblpnote/retracted",
+            "@publtype": "withdrawn",
+            "title": "paper retracted",
+            "@mdate": "2017-01-13"
+        }, {
+            "@key": "dblpnote/withdrawn",
+            "@publtype": "informal publication",
+            "title": "(paper withdrawn)",
+            "@mdate": "2013-02-10"
+        }, {
+            "@key": "dblpnote/neverpublished",
+            "@publtype": "informal publication",
+            "title": "(was never published)",
+            "@mdate": "2013-02-12"
+        }, {
+            "@key": "dblpnote/ellipsis",
+            "@publtype": "informal publication",
+            "title": "\u2026",
+            "@mdate": "2013-02-12"
+        }],
+        "www": [{
+            "author": "Michael Ley",
+            "url": "http://dblp.uni-trier.de/",
+            "title": "DBLP.uni-trier.de: Computer Science Bibliography",
+            "@key": "persons/Ley93",
+            "@mdate": "2005-10-06",
+            "year": "1993"
+        }, {
+            "author": "Michael Ley",
+            "url": "http://www.informatik.uni-trier.de/~ley/db/about/contributionaward03.html",
+            "title": "ACM SIGMOD Contribution Award 2003 Acceptance Speech",
+            "@key": "persons/Ley2003",
+            "@mdate": "2005-10-06",
+            "year": "2003"
+        }],
+        "book": {
+            "publisher": "Peer-to-Peer Communications",
+            "isbn": "1-57398-013-7",
+            "author": "John Lions",
+            "url": "http://www.lemis.com/grog/Documentation/Lions/index.html",
+            "title": "Lions' Commentary on UNIX 6th Edition, with Source Code",
+            "@key": "persons/Lions1996",
+            "@mdate": "2007-01-12",
+            "year": "1996"
+        },
+        "incollection": [{
+            "author": "Veli Mkinen",
+            "ee": "http://dx.doi.org/10.1007/978-0-387-30162-4_82",
+            "@publtype": "encyclopedia entry",
+            "title": "Compressed Suffix Array.",
+            "@key": "reference/algo/Makinen08",
+            "@mdate": "2011-11-25",
+            "url": "db/reference/algo/algo2008.html#Makinen08",
+            "year": "2008",
+            "booktitle": "Encyclopedia of Algorithms",
+            "crossref": "reference/algo/2008"
+        }, {
+            "title": "Atomic Scan.",
+            "ee": "http://dx.doi.org/10.1007/978-0-387-30162-4_41",
+            "@publtype": "encyclopedia entry",
+            "@mdate": "2011-11-25",
+            "@key": "reference/algo/X08o",
+            "url": "db/reference/algo/algo2008.html#X08o",
+            "year": "2008",
+            "booktitle": "Encyclopedia of Algorithms",
+            "crossref": "reference/algo/2008"
+        }, {
+            "author": "Christian Komusiewicz",
+            "ee": "http://dx.doi.org/10.1007/978-1-4939-2864-4_530",
+            "@publtype": "encyclopedia entry",
+            "title": "Kernelization, Partially Polynomial Kernels.",
+            "@key": "reference/algo/Komusiewicz16",
+            "@mdate": "2016-04-28",
+            "url": "db/reference/algo/algo2016.html#Komusiewicz16",
+            "year": "2016",
+            "booktitle": "Encyclopedia of Algorithms",
+            "pages": "1028-1031"
+        }, {
+            "author": "Li-Sha Huang",
+            "ee": "http://dx.doi.org/10.1007/978-0-387-30162-4_160",
+            "@publtype": "encyclopedia entry",
+            "title": "General Equilibrium.",
+            "@key": "reference/algo/Huang08a",
+            "@mdate": "2011-11-25",
+            "url": "db/reference/algo/algo2008.html#Huang08a",
+            "year": "2008",
+            "booktitle": "Encyclopedia of Algorithms",
+            "crossref": "reference/algo/2008"
+        }, {
+            "author": "Nitish Korula",
+            "ee": "http://dx.doi.org/10.1007/978-1-4939-2864-4_540",
+            "@publtype": "encyclopedia entry",
+            "title": "Orienteering Problems.",
+            "@key": "reference/algo/Korula16",
+            "@mdate": "2016-04-28",
+            "url": "db/reference/algo/algo2016.html#Korula16",
+            "year": "2016",
+            "booktitle": "Encyclopedia of Algorithms",
+            "pages": "1481-1484"
+        }],
+        "inproceedings": [{
+            "author": "E. F. Codd",
+            "url": "db/conf/ds/dbm74.html#Codd74",
+            "booktitle": "IFIP Working Conference Data Base Management",
+            "title": "Seven Steps to Rendezvous with the Casual User.",
+            "month": "January",
+            "note": "IBM Research Report RJ 1333, San Jose, California",
+            "@key": "persons/Codd74",
+            "@mdate": "2012-09-18",
+            "year": "1974",
+            "cdrom": "DS/DS1974/P179.pdf",
+            "pages": "179-200"
+        }, {
+            "author": ["Werner John", "Dominik Ley", "Joachim Mller"],
+            "booktitle": "Proc. 11th Int. Symposium on Electromagnetic Compatibility (EMC'94)",
+            "title": "ROSAR - Rule Oriented System for Analysis of Reflections on Printed Circuit Boards",
+            "@key": "persons/JohnLM94",
+            "@mdate": "2002-01-03",
+            "year": "1994",
+            "pages": "40-43"
+        }]
+    }
+}

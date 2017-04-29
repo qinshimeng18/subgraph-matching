@@ -7,12 +7,14 @@ from querygraph import QueryGraph
 import networkx as nx
 import matplotlib.pyplot as plt
 import copy
-from collections import deque,OrderedDict
+from collections import deque, OrderedDict
 import sys
 import timeit
 from pprint import pprint
-reload(sys)
-sys.setdefaultencoding('utf-8')
+from loadxml import loadxml
+# reload(sys)
+# sys.setdefaultencoding('utf-8')
+
 
 def splitvertices(matching):
     """Split into vertices in and out of matching."""
@@ -28,30 +30,16 @@ def splitvertices(matching):
     # print u, '#####', v
     return list(inner), list(outer)
 
+
 def formatMatching(G, matching):
-    # G=nx.grid_2d_graph(2,1)  #4x4 grid
-    # plt.subplot(221)
-    # nx.draw(G,pos,font_size=8)
-    # plt.subplot(222)
-    # nx.draw(G,pos,node_color='k',node_size=0,with_labels=False)
-    # plt.subplot(223)
-    # nx.draw(G,pos,node_color='g',node_size=250,with_labels=False,width=6)
-    # #最后一幅子图转为有向图
-    # plt.subplot(224)
-    # H=G.to_directed()
-    # nx.draw(H,pos,node_color='b',node_size=20,with_labels=False)
-    # plt.savefig("four_grids.png")
-    # plt.show()
     inner, outer = splitvertices(matching)
-    # print inner, outer
     pos = nx.spring_layout(G)
-    # Blue = vertices _not_ in matching
-    labels={}
+    labels = {}
     for i in inner:
-        labels[i]='P='+i[:10]
+        labels[i] = 'P=' + i[:10]
     for i in outer:
-        labels[i]='A='+i[:10]
-    #authour
+        labels[i] = 'A=' + i[:10]
+    # authour
     nx.draw_networkx_nodes(G, pos,
                            nodelist=outer,
                            node_color='r',
@@ -64,18 +52,13 @@ def formatMatching(G, matching):
                            node_color='g',
                            node_size=100,
                            alpha=0.7, with_labels=True, font_size=8)
-    nx.draw_networkx_labels(G,pos,labels=labels,alpha=0.4,font_size=10)
+    nx.draw_networkx_labels(G, pos, labels=labels, alpha=0.4, font_size=10)
     # Highlight matching edges
     nx.draw_networkx_edges(G, pos, width=0.6, alpha=0.3)
     nx.draw_networkx_edges(G, pos,
                            edgelist=list(matching),
                            width=0.6, alpha=0.5,  edge_color='black')
 
-    # Generate random matching, if not provided.
-    # if not matching:
-    #     matching = self.randomMatching()
-    # # Convert to NetworkX
-    # G = self.__toNetworkX()
 
 def edges_vertices_from_json(path):
     """
@@ -107,7 +90,8 @@ def edges_vertices_from_json(path):
 
     return edges, vertices
 
-def networkx_graph(vertices,edges,name='default'):
+
+def networkx_graph(vertices, edges, name='default'):
     """
     利用networkx绘图
     """
@@ -124,8 +108,8 @@ def networkx_graph(vertices,edges,name='default'):
     # plt.show()  # 显示图表
     # print G.edges()
     formatMatching(G, edges)
-    plt.savefig(name+'.png')
-    # plt.show()
+    plt.savefig(name + '.png')
+    plt.show()
     data = {}
 
     # pos = nx.spring_layout(G)          #定义一个布局，此处采用了spectral布局方式，后变还会介绍其它布局方式，注意图形上的区别
@@ -144,6 +128,7 @@ def networkx_graph(vertices,edges,name='default'):
     # gg=nx.Graph()
     # gg.add_edges_from(g.adjacency_dict)
 
+
 def label_edges_vertices_from_json(path):
     """
     异构网络：人是种类category，教授、讲师和学生等是label
@@ -155,10 +140,8 @@ def label_edges_vertices_from_json(path):
     edges = []
     vertices = {}
     with open(path, 'r') as json_file:
-        data = json.load(json_file)
-    dblp = json.loads(data)['dblp']['article']
+        dblp = json.load(json_file)['dblp']['article']
     # ablp=[{author:--,title:---,month:---,volume:--,year:--},{},{}]
-    del data
     for i in dblp:
         if i.has_key('author') and i.has_key('title'):
             if type(i['title']) == dict:
@@ -175,36 +158,20 @@ def label_edges_vertices_from_json(path):
     del dblp
     return edges, vertices
 
-def set_query_graph():
+
+def set_query_graph(query_graph):
     """
     vertex id is number, category and label matters
     Returns:
         [query graph] -- [description]
     """
-    vertices = {
-        '1': {'category': 'paper', 'weight': 1}, 
-        '2': {'category': 'person', 'weight': 1},
-        '3': {'category': 'paper', 'weight': 1}, 
-        '4': {'category': 'paper', 'weight': 1}
-        }
-    edges_weight = {
-        '1': {
-            '2': 0.3
-        },
-        '2': {
-            '3': 0.8,
-            '1': 0.3,
-            '4': 0.2
-        },
-        '3': {
-            '2': 0.8
-        },
-        '4': {
-            '2': 0.2
-        }
-    }
-    q = QueryGraph(vertices, edges_weight, '1', False)
+
+    query_graphs=json.load(open('query_graph.json', 'r'))
+    vertices = query_graphs[query_graph]['vertices']
+    edges_weight = query_graphs[query_graph]['edges_weight']
+    q = QueryGraph(vertices, edges_weight, u0='1', is_directed=False)
     return q
+
 
 def print_graph(g):
     print '边的数量： ', len(g.get_edges())
@@ -212,94 +179,89 @@ def print_graph(g):
     # print 'edges:   ',  dict(g.get_edges())
     # print 'edges:   ',  g.get_edges()
 
+
 def filter1_in_category_set(q):
     return q.category_list
 
-def gephi(edges):
-    with open('gephi.csv','w') as f:
+
+def out_gephi_csv(edges):
+    with open('edges.csv', 'w') as f:
         for i in edges:
-            f.write('\''+str(i[0])+'\''+','+'\''+str(i[1])+'\''+'\n')
+            f.write('\'' + str(i[0]) + '\'' + ',' +
+                    '\'' + str(i[1]) + '\'' + '\n')
 
-def bfs_query_graph(q):
-    """
-    [different layers in bfs search]
-    
-    Arguments:
-        q {[object]} -- [query graph]
-    
-    Returns:
-        [dict] -- [{layer_int:vertices}]
-    """
-    queue = deque(['1'])
-    while queue:
-        v = queue.popleft()
-    def bfs():
-        yield node
-    get_category(bfs())
 
-    return layers_vertices
-
-    # networkx_graph(edges,vertices)
-def children_lost(q,v,parent):
-    lost = 0 
-    for child in q.neighbours(v,visited=[parent]) :
+def children_lost(q, v, parent):
+    lost = 0
+    for child in q.neighbours(v, visited=[parent]):
         lost += q.adjacency_dict[v][child]
-        children_lost(q,child,v)
+        children_lost(q, child, v)
     return lost
-def judge(u,i,j,q,g):
+
+
+def judge(u, i, j, q, g):
     if q.get_vertex_category(i) == g.get_vertex_category(j):
         return q.adjacency_dict[u][i]
     else:
         False
 
-def isSame(u, v,q,g,visited = [],matched=[]):
-    print 'u:',u
-    print 'v:',v
-    print matched
-    children_u = q.neighbours(u,visited)
-    children_v = g.neighbours(v,visited)
+
+def isSame(u, v, q, g, visited=[], matched=[]):
+    # print 'u:',u
+    # print 'v:',v
+    children_u = q.neighbours(u, visited)
+    children_v = g.neighbours(v, visited)
     matchArray = []
     match_score = 0
     lost_score = 0
     matched.append(v)
     for i in children_u:
-        i_matched = False # True if i has matched
-        print 'i: ',i
+        i_matched = False  # True if i has matched
+        # print 'i: ',i
         for j in children_v:
-            print 'j: ',j
-            print 'matched:',matched
-            print 'visited:',visited
+            # print 'j: ',j
+            # print 'matched:',matched
+            # print 'visited:',visited
             if j not in matched and j not in visited:
-                judge_score = judge(u,i, j,q,g)
-                if(judge):
+                judge_score = judge(u, i, j, q, g)
+                if(judge_score):
                     i_matched = True
                     matched.append(j)
                     match_score += judge_score
-                    print 'matched score: ',match_score
-                    print 'lost score :   ',lost_score
-                    matchArray.append((i,j))
+                    # print 'matched score: ',match_score
+                    # print 'lost score :   ',lost_score
+                    matchArray.append((i, j))
                     break
         if not i_matched:
-            print 'not match'
-            if q.has_children(i,u):
-                lost_score+=children_lost(q,i,u)
+            # print 'not match'
+            if q.has_children(i, u):
+                lost_score += children_lost(q, i, u)
             else:
                 lost_score += q.adjacency_dict[u][i]
     for i in matchArray:
-        visited.extend([i[0],i[1]])
-        m,l = isSame(i[0], i[1],q,g,visited,matched)
-        match_score+=m
-        lost_score+=l
-    return match_score,lost_score
+        visited.extend([i[0], i[1]])
+        m, l = isSame(i[0], i[1], q, g, visited, matched)
+        match_score += m
+        lost_score += l
+    return match_score, lost_score
+
 
 def main():
+    # xml to json ; then json to graph
+    # xml_in = 'small.xml'
+    # json_out = 'small.json'
+    # loadxml(xml_in,json_out)
+
     # create Data graph and Query graph
-    path = 'data.json'
+    graph_path = 'data.json'
+    query_graph = "graph2"
     graph_focus = []
-    edges, vertices = label_edges_vertices_from_json(path)
+    edges, vertices = label_edges_vertices_from_json(graph_path)
     g = Graph(vertices, edges, False)  # 边的数量会多一半
-    q = set_query_graph()
-    u0 = '1' #the first node in query graph
+    q = set_query_graph(query_graph)
+    print_graph(g)
+    u0 = '1'  # the first node in query graph
+
     # 得到graph中所有的focus点（用category做比较）
     remove_num = 0
     for vertex in g.get_vertices():
@@ -310,16 +272,20 @@ def main():
         if g.get_vertex_category(vertex) not in filter1_in_category_set(q):
             g.remove_vertex(vertex)
             remove_num += 1
+    # graph_focus = vertices
     focus_score = OrderedDict()
     for v0 in graph_focus:
-        focus_score[v0] = isSame(u0,v0,q,g,[u0,v0],[])
-        print '-------------'
-
+        focus_score[v0] = isSame(u0, v0, q, g, [u0, v0], [])
+        # print '-------------'
         # break
-    pprint(focus_score)
+    # for _ in focus_score:
+    #     print _,focus_score[_]
+    k = 10
+    top_k = sorted(focus_score.iteritems(),
+                   key=lambda d: d[1][0], reverse=True)[:k]
+    print top_k
     # gg=networkx_graph(g.get_vertices(),edges,'g')
 if __name__ == '__main__':
-    # main()
     print(timeit.timeit("main()", setup="from __main__ import main", number=1))
 
 # def main():
@@ -406,8 +372,8 @@ if __name__ == '__main__':
 #     #不能同时打开会重叠的
 #     # qq=networkx_graph(q.get_vertices(),q.get_edges(),'q')
 #     # gg=networkx_graph(g.get_vertices(),edges,'g')
-#     # gephi graph_focus
-#     # gephi(edges)
+#     # out_gephi_csv graph_focus
+#     # out_gephi_csv(edges)
 #     print 'remove_num: ', remove_num
 #     print 'graph_focus: ', len(graph_focus)
 #     print 'foucus_num',foucus_num
