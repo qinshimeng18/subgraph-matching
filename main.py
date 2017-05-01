@@ -191,11 +191,16 @@ def out_gephi_csv(edges):
                     '\'' + str(i[1]) + '\'' + '\n')
 
 
-def children_lost(q, v, parent):
+def children_lost(q, u, parent,visited_edges,lost_edges):
+    """[summary]
+    lost score will >= real lost score for the edges may match in other match
+    """
     lost = 0
-    for child in q.neighbours(v, visited=[parent]):
-        lost += q.adjacency_dict[v][child]
-        children_lost(q, child, v)
+    for child in q.neighbours(u, visited=[parent]):
+        if (u,child) not in visited_edges+lost_edges and (child,u) not in visited_edges+lost_edges:
+            lost += q.adjacency_dict[u][child]
+            lost_edges.append((u,child))
+            lost += children_lost(q, child, u,visited_edges,lost_edges)
     return lost
 
 
@@ -206,7 +211,10 @@ def judge(u, i, j, q, g):
         False
 
 
-def isSame(u, v, q, g, visited=[], matched=[]):
+def isSame(u, v, q, g, visited=[], matched=[],visited_edges = [],lost_edges=[],visited_e=[]):
+    """[summary]
+    
+    """
     # print 'u:',u
     # print 'v:',v
     children_u = q.neighbours(u, visited)
@@ -214,33 +222,43 @@ def isSame(u, v, q, g, visited=[], matched=[]):
     matchArray = []
     match_score = 0
     lost_score = 0
-    matched.append(v)
+    matched.append((u,v))
     for i in children_u:
         i_matched = False  # True if i has matched
         # print 'i: ',i
+        visited_edges.append((u,i))
+        lost_edges.append((u,i))
         for j in children_v:
             # print 'j: ',j
             # print 'matched:',matched
             # print 'visited:',visited
-            if j not in matched and j not in visited:
+            # j who haven't matched
+            if (v,j) not in visited_edges and (i,j) not in matched and j not in visited:
                 judge_score = judge(u, i, j, q, g)
                 if(judge_score):
                     i_matched = True
-                    matched.append(j)
+                    # matched.append(j)
                     match_score += judge_score
                     # print 'matched score: ',match_score
                     # print 'lost score :   ',lost_score
+                    # print i,j
                     matchArray.append((i, j))
+                    visited_e.append([(u,i),(v,j)])
                     break
         if not i_matched:
             # print 'not match'
             if q.has_children(i, u):
-                lost_score += children_lost(q, i, u)
+                lost_score += children_lost(q, i,u, visited_edges,lost_edges)
             else:
                 lost_score += q.adjacency_dict[u][i]
+    # for _ in matchArray:
+    #     if _ in visited_edges:
+    #         print "wrong: repeat edges"
+    #     else:
+    #     visited_edges.append(_)
     for i in matchArray:
         visited.extend([i[0], i[1]])
-        m, l = isSame(i[0], i[1], q, g, visited, matched)
+        m, l = isSame(i[0], i[1], q, g, visited, matched,visited_e)
         match_score += m
         lost_score += l
     return match_score, lost_score
@@ -253,9 +271,11 @@ def main():
     # loadxml(xml_in,json_out)
 
     # create Data graph and Query graph
-    graph_path = 'data.json'
+    k = 10
+    graph_path = 'small.json'
     query_graph = "graph2"
     graph_focus = []
+    lost_edges = []
     edges, vertices = label_edges_vertices_from_json(graph_path)
     g = Graph(vertices, edges, False)  # 边的数量会多一半
     q = set_query_graph(query_graph)
@@ -274,19 +294,32 @@ def main():
             remove_num += 1
     # graph_focus = vertices
     focus_score = OrderedDict()
+    matched_graphs = OrderedDict()
+    visited_vs = OrderedDict() #del
+    visited_es = OrderedDict() # del
     for v0 in graph_focus:
-        focus_score[v0] = isSame(u0, v0, q, g, [u0, v0], [])
+        matched=[]
+        visited=[u0, v0]
+        visited_e =[]
+        focus_score[v0] = isSame(u0, v0, q, g, visited=visited, matched=matched,visited_edges=[],lost_edges=[],visited_e=visited_e)
+        matched_graphs[v0] = matched
+        visited_vs[v0] = visited
+        visited_es[v0] = visited_e
         # print '-------------'
         # break
-    # for _ in focus_score:
-    #     print _,focus_score[_]
-    k = 10
+        
     top_k = sorted(focus_score.iteritems(),
                    key=lambda d: d[1][0], reverse=True)[:k]
-    print top_k
+    for _ in top_k:
+        print "graph:\n",_
+        print "- matched_graphs: \n",matched_graphs[_[0]]
+        print "- visited_vs: \n",visited_vs[_[0]]
+        print "- visited_es: \n",visited_es[_[0]]
+        print '---------------'
     # gg=networkx_graph(g.get_vertices(),edges,'g')
 if __name__ == '__main__':
     print(timeit.timeit("main()", setup="from __main__ import main", number=1))
+
 
 # def main():
 #     path = 'data.json'
