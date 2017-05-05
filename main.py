@@ -166,7 +166,7 @@ def set_query_graph(query_graph):
         [query graph] -- [description]
     """
 
-    query_graphs=json.load(open('query_graph.json', 'r'))
+    query_graphs = json.load(open('query_graph.json', 'r'))
     vertices = query_graphs[query_graph]['vertices']
     edges_weight = query_graphs[query_graph]['edges_weight']
     q = QueryGraph(vertices, edges_weight, u0='1', is_directed=False)
@@ -191,43 +191,205 @@ def out_gephi_csv(edges):
                     '\'' + str(i[1]) + '\'' + '\n')
 
 
-def children_lost(q, u, parent,visited_edges,lost_edges):
-    """[summary]
+def children_lost(q, u, level):
+    """[summary]q,array, level
     lost score will >= real lost score for the edges may match in other match
     """
-    lost = 0
-    for child in q.neighbours(u, visited=[parent]):
-        if (u,child) not in visited_edges+lost_edges and (child,u) not in visited_edges+lost_edges:
-            lost += q.adjacency_dict[u][child]
-            lost_edges.append((u,child))
-            lost += children_lost(q, child, u,visited_edges,lost_edges)
-    return lost
+    # lost_score = 0
+    lost_edges = set()
+    neighbours = filter_by_level(q, q.neighbours(u), level)
+    for child in neighbours:
+        lost_edges.add((u, child))
+        # lost_score += q.adjacency_dict[u][child]
+        lost_score_child, lost_edges = children_lost(q, u, level + 1)
+        lost_edges |= lost_edges
+        # lost_score += lost_score_child
+    return lost_edges
 
 
 def judge(u, i, j, q, g):
     if q.get_vertex_category(i) == g.get_vertex_category(j):
         return q.adjacency_dict[u][i]
     else:
-        False
+        return 0
 
 
-def isSame(u, v, q, g, visited=[], matched=[],visited_edges = [],lost_edges=[],visited_e=[]):
+def setLevel(q, root):
+    level = 0
+    queue = []
+    queue_back = []
+    queue.append(root)
+    while 1:
+        if len(queue) == 0 and len(queue_back) == 0:
+            break
+        while len(queue) > 0:
+            node = queue.pop()
+            q.set_vertex_level(node, level)
+            children = q.neighbours(node)
+            for i in children:
+                if not q.has_vertex_level(i) and i not in queue_back:
+                    queue_back.append(i)
+        level += 1
+        if len(queue) == 0 and len(queue_back) == 0:
+            break
+        while len(queue_back) > 0:
+            node = queue_back.pop()
+            q.set_vertex_level(node, level)
+            children = q.neighbours(node)
+            for i in children:
+                if not q.has_vertex_level(i) and i not in queue:
+                    queue.append(i)
+        level += 1
+
+
+def filter_by_level(q, array, level):
+    """[children down]
+    make sure node wont go back to a circle
+    """
+    result = []
+    for i in array:
+        # print 'node',i,' level',q.get_vertex_level(i),' >? ',level
+        if(q.get_vertex_level(i) > level):
+            result.append(i)
+    return result
+
+
+def judge_array(array):
+    for i in array:
+        if i != 0:
+            return False
+    return True
+
+
+def poss_combination(a, b, temp, result):
+    # print temp
+    length = len(temp)
+    # print length
+    if judge_array(a) or judge_array(b):
+        result.append(temp)
+        return result
+    for i in range(len(a)):
+        for j in range(length, len(b)):
+            if a[i] != 0 and b[j] != 0:
+                temp_ = copy.deepcopy(temp)
+                temp_.append((a[i], b[j]))
+                a_i = a[i]
+                b_j = b[j]
+                a[i] = 0
+                b[j] = 0
+                # print "array", a, b
+                poss_combination(a, b, temp_, result)
+                a[i] = a_i
+                b[j] = b_j
+    return result
+
+
+def get_combinations(a, b, temp):
+    if len(a) < len(b):
+        a, b = b, a
+    return poss_combination(a, b, temp, [])
+
+def get_lost_score(q,lost_edges):
+    score = 0
+    for i in lost_edges:
+        score+=q.adjacency_dict[i[0]][i[1]]
+    return score
+def isSame(u, v, q, g, level=0):
     """[summary]
-    
+
     """
     # print 'u:',u
     # print 'v:',v
-    children_u = q.neighbours(u, visited)
-    children_v = g.neighbours(v, visited)
+    print '\n'
+    children_u = q.neighbours(u)
+    children_v = g.neighbours(v)
+    children_u = filter_by_level(q, children_u, level)  # not go back
+    print u, '`s children_u un-filter', children_u, '  current level is; ', level
+    # print 'current level:',level
+    # print u,'`s children_u',children_u
+    level += 1
     matchArray = []
     match_score = 0
-    lost_score = 0
-    matched.append((u,v))
+    lost_edges = set()
+    m_u_list = set()
+    l_u_list = set()
+    # matched.append((u,v))
+    # o(n^3)  n*(n-1)*(n-2)....
+    combinations = get_combinations(children_u, children_v, [])
+    """ [ [(Um,Vn),(U,V)] , [(),()] ]"""
+
+    # print '---combinations--:',combinations
+    if combinations and combinations[0]:
+        u_index, v_index = (0, 1) if combinations[0][0][0].isalnum() else (1, 0)
+        for combination in combinations:
+        """[  ]"""
+            simi_score = 0
+            di_simi_score = 0
+            di_simi_edges=set()
+
+            line_matched = True
+            lost_u_vertices = set()
+            match_u_vertices = set()
+            # 得到u_children匹配的结点对（即匹配出发边）、损失边及其损失点不在匹配边的权重之和
+            for item in combination:
+                judge_score = judge(u, item[u_index], item[v_index], q, g)
+                if judge_score:
+                    
+                    match_u_vertices.add(item[u_index])
+                    simi_score += judge_score
+                else:
+                    di_simi_edges |= children_lost(q, item[u_index], level+1)
+
+            lost_u_vertices = set(children_u) - match_u_vertices
+            for node in lost_u_vertices:
+                di_simi_edges |= children_lost(q, node, level+1)
+            di_simi_score = get_lost_score(q,di_simi_edges)
+
+
+            if match_score == 0 or match_score < judge_score:
+                match_score = simi_score
+                matchArray = combination
+                lost_score = di_simi_score
+                lost_edges = di_simi_edges
+                # ç = judge()
+            #     if judge_score:
+            #         simi_score+=judge_score
+            #     else:
+            #         line_matched = False
+            #         break
+            # if line_matched:
+            #     if match_score == 0 or match_score < judge_score :
+            #         match_score += simi_score
+            #         matchArray = combination
+    print 'matchArray:', matchArray
+    print 'matchscroe:', match_score
+    print 'di_simi_score',di_simi_score
+    print 'di_simi_edges',di_simi_edges
+    for i in matchArray:
+        m_u_list.add((u, i[u_index]))
+        # l_u_list
+        # visited.extend([i[0], i[1]])
+        # print i,u_index,v_index
+        # print 'in-level--:',level
+        # print u,'m_u_list',m_u_list
+        print 'do matching :', i
+        m, l, m_u, l_u = isSame(i[u_index], i[v_index], q, g, level)
+        match_score += m
+        lost_score += l
+        # print 'm_u_list,',m_u_list
+        m_u_list = m_u_list | m_u
+        # l_u_list = l_u_list|l+u
+        # break
+
+    return match_score, lost_score, m_u_list, l_u_list
+
+    #------------
+    """
     for i in children_u:
         i_matched = False  # True if i has matched
         # print 'i: ',i
         visited_edges.append((u,i))
-        lost_edges.append((u,i))
+        # lost_edges.append((u,i))
         for j in children_v:
             # print 'j: ',j
             # print 'matched:',matched
@@ -248,9 +410,11 @@ def isSame(u, v, q, g, visited=[], matched=[],visited_edges = [],lost_edges=[],v
         if not i_matched:
             # print 'not match'
             if q.has_children(i, u):
-                lost_score += children_lost(q, i,u, visited_edges,lost_edges)
+                # lost_score += children_lost(q, i,u, visited_edges,lost_edges)
+                pass
             else:
                 lost_score += q.adjacency_dict[u][i]
+    # ---------------
     # for _ in matchArray:
     #     if _ in visited_edges:
     #         print "wrong: repeat edges"
@@ -258,10 +422,11 @@ def isSame(u, v, q, g, visited=[], matched=[],visited_edges = [],lost_edges=[],v
     #     visited_edges.append(_)
     for i in matchArray:
         visited.extend([i[0], i[1]])
-        m, l = isSame(i[0], i[1], q, g, visited, matched,visited_e)
+        m, l = isSame(i[0], i[1], q, g, visited, matched,visited_e,level+1)
         match_score += m
         lost_score += l
     return match_score, lost_score
+    """
 
 
 def main():
@@ -281,7 +446,10 @@ def main():
     q = set_query_graph(query_graph)
     print_graph(g)
     u0 = '1'  # the first node in query graph
+    setLevel(q, u0)
+    print "====setlevel====="
 
+    pprint(q.get_vertices())
     # 得到graph中所有的focus点（用category做比较）
     remove_num = 0
     for vertex in g.get_vertices():
@@ -292,123 +460,39 @@ def main():
         if g.get_vertex_category(vertex) not in filter1_in_category_set(q):
             g.remove_vertex(vertex)
             remove_num += 1
-    # graph_focus = vertices
+    # graph_focus == vertices
+    #
     focus_score = OrderedDict()
     matched_graphs = OrderedDict()
-    visited_vs = OrderedDict() #del
-    visited_es = OrderedDict() # del
+    visited_vs = OrderedDict()  # del
+    visited_es = OrderedDict()  # del
+    count = 0
+
     for v0 in graph_focus:
-        matched=[]
-        visited=[u0, v0]
-        visited_e =[]
-        focus_score[v0] = isSame(u0, v0, q, g, visited=visited, matched=matched,visited_edges=[],lost_edges=[],visited_e=visited_e)
+        matched = []
+        visited = [u0, v0]
+        visited_e = []
+        level = 0
+        focus_score[v0] = isSame(u0, v0, q, g, level=level)
         matched_graphs[v0] = matched
         visited_vs[v0] = visited
         visited_es[v0] = visited_e
         # print '-------------'
-        # break
-        
+        break
+        # if count>1:
+        #     break
+        # else:
+        #     count+=1
+        #     print '======================================================'
+
     top_k = sorted(focus_score.iteritems(),
                    key=lambda d: d[1][0], reverse=True)[:k]
     for _ in top_k:
-        print "graph:\n",_
-        print "- matched_graphs: \n",matched_graphs[_[0]]
-        print "- visited_vs: \n",visited_vs[_[0]]
-        print "- visited_es: \n",visited_es[_[0]]
+        print "graph:\n", _
+        print "- matched_graphs: \n", matched_graphs[_[0]]
+        # print "- visited_vs: \n",visited_vs[_[0]]
+        # print "- visited_es: \n",visited_es[_[0]]
         print '---------------'
     # gg=networkx_graph(g.get_vertices(),edges,'g')
 if __name__ == '__main__':
     print(timeit.timeit("main()", setup="from __main__ import main", number=1))
-
-
-# def main():
-#     path = 'data.json'
-#     graph_focus = []
-#     edges, vertices = label_edges_vertices_from_json(path)
-#     g = Graph(vertices, edges, False)  # 边的数量会多一半
-#     q = set_query_graph()
-#     # 得到graph中所有的focus点（用category做比较）
-#     remove_num = 0
-#     for vertex in g.get_vertices():
-#         # print vertex,q.get_u0_category()
-#         if g.get_vertex_category(vertex) == q.get_u0_category():
-#             graph_focus.append(vertex)
-#         # 对图进行修改
-#         if g.get_vertex_category(vertex) not in filter1_in_category_set(q):
-#             g.remove_vertex(vertex)
-#             remove_num += 1
-#     bfs = deque(graph_focus)
-#     foucus_num = 0
-#     for v in graph_focus:
-#         # print 'v^^^^^^^^^^^^^^^^^^^^^^^^',v
-#         count = 0
-#         foucus_num+=1
-#         visited = set()
-#         # 复制一个树
-#         G = copy.deepcopy(g)
-#         # 初始队列
-#         queue = deque([v])
-#         visited.add(v)
-
-# #         for sub_vertex in G.neighbours(neighbour, visited):
-# #             for sub_query_vertex in q.neighbours(neighbour)
-# #             if G.get_vertex_category(sub_vertex) == q.get_category('1'):
-# # def get_union(u,v):
-# #     # return [(v1,v2)],[(u1,u2)],[(category,category)]
-# #     return {u1:[v1,v2],u2:[v1,v5]}
-
-# #         for q_vertex in q.neighbours(u,v):
-# #             vertices_union,u_union,categories = get_union(u,v)
-
-
-#         # print '开始queue: ',queue
-#         # print '开始visited: ',visited
-#         while queue:
-#             count+=1
-#             # print '-------开始nfs---处理V，将v的邻居加入queue和visited中----'
-#             # print 'step ',count
-#             # 弹出队列的第一个元素v
-#             v = queue.popleft()
-#             # print 'vertexv(当前循环节点): ',v
-#             # 得到在G中的临节点
-#             neighbours = G.neighbours(v, visited)
-#             # print 'v的neighbours ',neighbours
-#             # 将邻居结点加入队列和访问过list中去
-#             visited = visited.union(neighbours)
-#             queue.extend(neighbours)
-#             # print '开始queue: ',len(queue),queue
-#             # print '开始visited: ',len(visited),visited
-#             for neighbour in neighbours:
-#                 neighbour_neighbours = G.neighbours(neighbour, visited)
-#                 # print 'neighbour_neighbours',len(neighbour_neighbours),neighbour_neighbours
-#                 visited = visited.union(neighbour_neighbours)
-#                 if neighbour_neighbours:
-#                     queue.extend(neighbour_neighbours)
-#             # print '结束visited: ',len(visited),visited
-#             # print '结束queue: ',len(queue),queue
-#         print '--------循环结束-------'
-#         print 'count',count
-#         print 'visited: ',len(visited)
-#         break
-#         # u_now = bfs.popleft()
-#         # visited.append(u_now)
-#         # neighbours = G.neighbours(u_now)
-#         # delete_edges(neighbours,u_now)
-#         # for neighbour in neighbours:
-#         #     if g.get_vertex_category(neighbour) 交集 q.:
-#         #         sum()
-#         #     top[id:score]
-
-#         # bfs = []
-#         # bfs.append(u)
-#         # bfs+=G.neighbours(u)
-#     #不能同时打开会重叠的
-#     # qq=networkx_graph(q.get_vertices(),q.get_edges(),'q')
-#     # gg=networkx_graph(g.get_vertices(),edges,'g')
-#     # out_gephi_csv graph_focus
-#     # out_gephi_csv(edges)
-#     print 'remove_num: ', remove_num
-#     print 'graph_focus: ', len(graph_focus)
-#     print 'foucus_num',foucus_num
-#     print_graph(g)
-#     print_graph(q)

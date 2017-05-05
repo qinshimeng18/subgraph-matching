@@ -133,4 +133,18 @@ class QueryGraph:
 
         if vertex not in self.adjacency_dict.keys():
             raise ValueError("Vertex {} is not in graph".format(vertex))
-        return [neighbour for neighbour in self.adjacency_dict[vertex].keys() if neighbour not in visited] 
+        return [neighbour for neighbour in self.adjacency_dict[vertex].keys() if neighbour not in visited]
+    def set_vertex_level(self,u,level):
+        self.vertices[u]['level'] = level
+        # print 'level: ',self.vertices[u]['level']
+    def has_vertex_level(self,u):
+        # print self.vertices
+        # print self.vertices[u],"has level?: ",self.vertices[u].has_key('level')
+        if 'level' in self.vertices[u]:
+            return True
+        else:
+            return False
+    def get_vertex_level(self,u):
+        return self.vertices[u]['level']
+    def get_vertices(self):
+        return self.vertices
