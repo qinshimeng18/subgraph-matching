@@ -14,6 +14,7 @@ from pprint import pprint
 from loadxml import loadxml
 # reload(sys)
 # sys.setdefaultencoding('utf-8')
+u0_infuence = 0
 
 
 def splitvertices(matching):
@@ -163,7 +164,7 @@ def set_query_graph(query_graph):
     """
     vertex id is number, category and label matters
     Returns:
-        [query graph] -- [description]
+        [query graph] -- 
     """
 
     query_graphs = json.load(open('query_graph.json', 'r'))
@@ -291,44 +292,41 @@ def get_combinations(a, b, temp):
         a, b = b, a
     return poss_combination(a, b, temp, [])
 
-def get_lost_score(q,lost_edges):
+
+def get_lost_score(q, lost_edges):
     score = 0
     for i in lost_edges:
-        score+=q.adjacency_dict[i[0]][i[1]]
+        score += q.adjacency_dict[i[0]][i[1]]
     return score
+
+
 def get_u_edges(q):
     # for i in q.
     pass
-def isSame(u, v, q, g, level=0):
-    """[summary]
 
-    """
-    # print 'u:',u
-    # print 'v:',v
-    print '\n'
-    children_u = q.neighbours(u)
+
+def isSame(u, v, q, g, level=0, lost_score=0, min_Vk_Score=0):
+    # print '\n'##pp1
+    global u0_infuence
     children_v = g.neighbours(v)
-    children_u = filter_by_level(q, children_u, level)  # not go back
-    print u, '`s children_u un-filter', children_u, '  current level is; ', level
-    # print 'current level:',level
-    # print u,'`s children_u',children_u
+    children_u = filter_by_level(q, q.neighbours(u), level)  # not go back
+    # print u, '`s children_u un-filter', children_u, '  current level is; ',
+    # level ##pp1
     level += 1
     matchArray = []
     match_score = 0
-    dissimilarity= 0
-    lost_children= set()
-    # lost_edges = set()
+    dissimilarity = 0
+    lost_children = set()
     m_u_list = set()
     l_u_list = set()
-    # matched.append((u,v))
     # o(n^3)  n*(n-1)*(n-2)....
     combinations = get_combinations(children_u, children_v, [])
     """ [ [(Um,Vn),(U,V)] , [(),()] ]"""
 
-    # print '---combinations--:',combinations
     # 得到u_children匹配的结点对
     if combinations and combinations[0]:
-        u_index, v_index = (0, 1) if combinations[0][0][0].isalnum() else (1, 0)
+        u_index, v_index = (0, 1) if combinations[0][
+            0][0].isalnum() else (1, 0)
         # 遍历所有情况，求当前simi_score最大的一组children匹配方式
         for combination in combinations:
             simi_score = 0
@@ -338,33 +336,55 @@ def isSame(u, v, q, g, level=0):
                 if judge_score:
                     match_u_vertices.add(item[u_index])
                     simi_score += judge_score
-            #更新simi_score最大的组合
+            # 更新simi_score最大的组合
             if match_score == 0 or match_score < judge_score:
                 match_score = simi_score
                 matchArray = combination
         matcth_children = set([mline[u_index] for mline in matchArray])
         lost_children = set(children_u) - matcth_children
-
-        print 'matcth_children',matcth_children
-        print 'lost_children',lost_children
-    print 'matchArray:', matchArray
-    print 'matchscroe:', match_score
+        # print 'matcth_children',matcth_children ##pp1
+        # print 'lost_children',lost_children ##pp1
+    # print 'matchArray:', matchArray ##pp1
+    # print 'matchscroe:', match_score ##pp1
     for lost_node in lost_children:
         dissimilarity += q.adjacency_dict[u][lost_node]
-        for child_child in filter_by_level(q,q.neighbours(lost_node),level):
+        for child_child in filter_by_level(q, q.neighbours(lost_node), level):
             dissimilarity += q.adjacency_dict[lost_node][child_child]
-    print 'dissimilarity',dissimilarity
+    lost_score += dissimilarity
+    if lost_score > (u0_infuence - min_Vk_Score):
+        return -1, set()
+    # print 'dissimilarity',dissimilarity ##pp1
     for i in matchArray:
         m_u_list.add((u, i[u_index]))
-        print 'do matching :', i
-        m, m_u= isSame(i[u_index], i[v_index], q, g, level)
+        # print 'do matching :', i ##pp1
+        m, m_u = isSame(i[u_index], i[v_index], q, g,
+                        level, lost_score, min_Vk_Score)
+        if m == -1:
+            break
         match_score += m
         m_u_list = m_u_list | m_u
         # break
 
-    return match_score,m_u_list
+    return match_score, m_u_list
 
-    #------
+
+def get_u0_infuence(q):
+    return (reduce((lambda x, y: x + y), [weight for value in q.adjacency_dict.values() for weight in value.values()])) / float(2)
+
+
+def get_graph_focus(q, g):
+    graph_focus = []
+    for vertex in g.get_vertices():
+        # print vertex,q.get_u0_category()
+        uo_category = q.get_u0_category()
+        if g.get_vertex_category(vertex) == uo_category:
+            graph_focus.append(vertex)
+        # delete vertices whose label are not in the query
+        if g.get_vertex_category(vertex) not in filter1_in_category_set(q):
+            g.remove_vertex(vertex)
+    return graph_focus
+
+
 def main():
     # xml to json ; then json to graph
     # xml_in = 'small.xml'
@@ -372,75 +392,67 @@ def main():
     # loadxml(xml_in,json_out)
 
     # create Data graph and Query graph
-    k = 100
+    k = 3
     graph_path = 'simple.json'
     query_graph = "graph2"
     graph_focus = []
-    lost_edges = []
+    u0 = '1'  # the first node in query graph
+    min_Vk_Score = 0
+    matched_graphs = deque()
+    global u0_infuence
+
     edges, vertices = label_edges_vertices_from_json(graph_path)
     g = Graph(vertices, edges, False)  # 边的数量会多一半
     q = set_query_graph(query_graph)
-    print_graph(g)
-    u0 = '1'  # the first node in query graph
     setLevel(q, u0)
-    print "====setlevel====="
-
-    pprint(q.get_vertices())
+    u0_infuence = get_u0_infuence(q)
+    graph_focus = get_graph_focus(q, g)
+    # print_graph(g) ##pp1
+    # pprint(q.get_vertices())##pp1
     # 得到graph中所有的focus点（用category做比较）
-    remove_num = 0
-    for vertex in g.get_vertices():
-        # print vertex,q.get_u0_category()
-        if g.get_vertex_category(vertex) == q.get_u0_category():
-            graph_focus.append(vertex)
-        # delete vertices whose label are not in the query
-        if g.get_vertex_category(vertex) not in filter1_in_category_set(q):
-            g.remove_vertex(vertex)
-            remove_num += 1
-    # graph_focus == vertices
-    #
-    
-    min_Vk_Score = 0
-    matched_graphs = deque()
+
     count = 1
     for v0 in graph_focus:
         matched = []
         visited = [u0, v0]
         visited_e = []
         level = 0
-        matched_result = isSame(u0, v0, q, g, level=level)
-       
-        if count < k :
-            matched_graphs.append([v0,matched_result])
+        matched_result = isSame(
+            u0, v0, q, g, level=level, lost_score=min_Vk_Score, min_Vk_Score=min_Vk_Score)
+        # 更新相似topk的集合 & 得到最小匹配分
+        if count < k:
+            matched_graphs.append([v0, matched_result])
         elif count == k:
-            matched_graphs.append([v0,matched_result])
-            matched_graphs=deque(sorted(matched_graphs,
-                   key=lambda d: d[1][0], reverse=True))
+            matched_graphs.append([v0, matched_result])
+            matched_graphs = deque(sorted(matched_graphs,
+                                          key=lambda d: d[1][0], reverse=True))
             min_Vk_Score = matched_graphs[-1][1][0]
         elif count > k:
             if matched_result[0] > min_Vk_Score:
                 min_Vk_Score = matched_graphs[-1][1][0]
                 matched_graphs.pop()
-                matched_graphs.append([v0,matched_result])
-                matched_graphs=deque(sorted(matched_graphs,
-                   key=lambda d: d[1][0], reverse=True))
+                matched_graphs.append([v0, matched_result])
+                matched_graphs = deque(sorted(matched_graphs,
+                                              key=lambda d: d[1][0], reverse=True))
             else:   # not in the topk list
                 pass
-        count+=1
+        count += 1
 
-    matched_graphs=deque(sorted(matched_graphs,
-                   key=lambda d: d[1][0], reverse=True))
-        # print '-------------'
-        # break
-        # if count>1:
-        #     break
-        # else:
-        #     count+=1
-        #     print '======================================================'
+    matched_graphs = deque(sorted(matched_graphs,
+                                  key=lambda d: d[1][0], reverse=True))
+    # print '-------------'
+    # break
+    # if count>1:
+    #     break
+    # else:
+    #     count+=1
+    #     print '======================================================'
 
     for _ in matched_graphs:
         print "graph:", _[0]
         print _[1]
-    print 'min_Vk_Score',min_Vk_Score
+    print 'min_Vk_Score', min_Vk_Score
+    print get_u0_infuence(q)
     #     # print "- visited_vs: \n",visited_vs[_[0]]
     #     # print "- visited_es: \n",visited_es[_[0]]
     #     print '---------------'
