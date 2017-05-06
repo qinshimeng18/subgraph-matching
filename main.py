@@ -245,6 +245,8 @@ def setLevel(q, root):
 def filter_by_level(q, array, level):
     """[children down]
     make sure node wont go back to a circle
+    array - neighbours
+    level +  1
     """
     result = []
     for i in array:
@@ -294,6 +296,9 @@ def get_lost_score(q,lost_edges):
     for i in lost_edges:
         score+=q.adjacency_dict[i[0]][i[1]]
     return score
+def get_u_edges(q):
+    # for i in q.
+    pass
 def isSame(u, v, q, g, level=0):
     """[summary]
 
@@ -310,7 +315,9 @@ def isSame(u, v, q, g, level=0):
     level += 1
     matchArray = []
     match_score = 0
-    lost_edges = set()
+    dissimilarity= 0
+    lost_children= set()
+    # lost_edges = set()
     m_u_list = set()
     l_u_list = set()
     # matched.append((u,v))
@@ -319,116 +326,45 @@ def isSame(u, v, q, g, level=0):
     """ [ [(Um,Vn),(U,V)] , [(),()] ]"""
 
     # print '---combinations--:',combinations
+    # 得到u_children匹配的结点对
     if combinations and combinations[0]:
         u_index, v_index = (0, 1) if combinations[0][0][0].isalnum() else (1, 0)
+        # 遍历所有情况，求当前simi_score最大的一组children匹配方式
         for combination in combinations:
-        """[  ]"""
             simi_score = 0
-            di_simi_score = 0
-            di_simi_edges=set()
-
-            line_matched = True
-            lost_u_vertices = set()
             match_u_vertices = set()
-            # 得到u_children匹配的结点对（即匹配出发边）、损失边及其损失点不在匹配边的权重之和
             for item in combination:
                 judge_score = judge(u, item[u_index], item[v_index], q, g)
                 if judge_score:
-                    
                     match_u_vertices.add(item[u_index])
                     simi_score += judge_score
-                else:
-                    di_simi_edges |= children_lost(q, item[u_index], level+1)
-
-            lost_u_vertices = set(children_u) - match_u_vertices
-            for node in lost_u_vertices:
-                di_simi_edges |= children_lost(q, node, level+1)
-            di_simi_score = get_lost_score(q,di_simi_edges)
-
-
+            #更新simi_score最大的组合
             if match_score == 0 or match_score < judge_score:
                 match_score = simi_score
                 matchArray = combination
-                lost_score = di_simi_score
-                lost_edges = di_simi_edges
-                # ç = judge()
-            #     if judge_score:
-            #         simi_score+=judge_score
-            #     else:
-            #         line_matched = False
-            #         break
-            # if line_matched:
-            #     if match_score == 0 or match_score < judge_score :
-            #         match_score += simi_score
-            #         matchArray = combination
+        matcth_children = set([mline[u_index] for mline in matchArray])
+        lost_children = set(children_u) - matcth_children
+
+        print 'matcth_children',matcth_children
+        print 'lost_children',lost_children
     print 'matchArray:', matchArray
     print 'matchscroe:', match_score
-    print 'di_simi_score',di_simi_score
-    print 'di_simi_edges',di_simi_edges
+    for lost_node in lost_children:
+        dissimilarity += q.adjacency_dict[u][lost_node]
+        for child_child in filter_by_level(q,q.neighbours(lost_node),level):
+            dissimilarity += q.adjacency_dict[lost_node][child_child]
+    print 'dissimilarity',dissimilarity
     for i in matchArray:
         m_u_list.add((u, i[u_index]))
-        # l_u_list
-        # visited.extend([i[0], i[1]])
-        # print i,u_index,v_index
-        # print 'in-level--:',level
-        # print u,'m_u_list',m_u_list
         print 'do matching :', i
-        m, l, m_u, l_u = isSame(i[u_index], i[v_index], q, g, level)
+        m, m_u= isSame(i[u_index], i[v_index], q, g, level)
         match_score += m
-        lost_score += l
-        # print 'm_u_list,',m_u_list
         m_u_list = m_u_list | m_u
-        # l_u_list = l_u_list|l+u
         # break
 
-    return match_score, lost_score, m_u_list, l_u_list
+    return match_score,m_u_list
 
-    #------------
-    """
-    for i in children_u:
-        i_matched = False  # True if i has matched
-        # print 'i: ',i
-        visited_edges.append((u,i))
-        # lost_edges.append((u,i))
-        for j in children_v:
-            # print 'j: ',j
-            # print 'matched:',matched
-            # print 'visited:',visited
-            # j who haven't matched
-            if (v,j) not in visited_edges and (i,j) not in matched and j not in visited:
-                judge_score = judge(u, i, j, q, g)
-                if(judge_score):
-                    i_matched = True
-                    # matched.append(j)
-                    match_score += judge_score
-                    # print 'matched score: ',match_score
-                    # print 'lost score :   ',lost_score
-                    # print i,j
-                    matchArray.append((i, j))
-                    visited_e.append([(u,i),(v,j)])
-                    break
-        if not i_matched:
-            # print 'not match'
-            if q.has_children(i, u):
-                # lost_score += children_lost(q, i,u, visited_edges,lost_edges)
-                pass
-            else:
-                lost_score += q.adjacency_dict[u][i]
-    # ---------------
-    # for _ in matchArray:
-    #     if _ in visited_edges:
-    #         print "wrong: repeat edges"
-    #     else:
-    #     visited_edges.append(_)
-    for i in matchArray:
-        visited.extend([i[0], i[1]])
-        m, l = isSame(i[0], i[1], q, g, visited, matched,visited_e,level+1)
-        match_score += m
-        lost_score += l
-    return match_score, lost_score
-    """
-
-
+    #------
 def main():
     # xml to json ; then json to graph
     # xml_in = 'small.xml'
@@ -436,8 +372,8 @@ def main():
     # loadxml(xml_in,json_out)
 
     # create Data graph and Query graph
-    k = 10
-    graph_path = 'small.json'
+    k = 100
+    graph_path = 'simple.json'
     query_graph = "graph2"
     graph_focus = []
     lost_edges = []
@@ -462,37 +398,53 @@ def main():
             remove_num += 1
     # graph_focus == vertices
     #
-    focus_score = OrderedDict()
-    matched_graphs = OrderedDict()
-    visited_vs = OrderedDict()  # del
-    visited_es = OrderedDict()  # del
-    count = 0
-
+    
+    min_Vk_Score = 0
+    matched_graphs = deque()
+    count = 1
     for v0 in graph_focus:
         matched = []
         visited = [u0, v0]
         visited_e = []
         level = 0
-        focus_score[v0] = isSame(u0, v0, q, g, level=level)
-        matched_graphs[v0] = matched
-        visited_vs[v0] = visited
-        visited_es[v0] = visited_e
+        matched_result = isSame(u0, v0, q, g, level=level)
+       
+        if count < k :
+            matched_graphs.append([v0,matched_result])
+        elif count == k:
+            matched_graphs.append([v0,matched_result])
+            matched_graphs=deque(sorted(matched_graphs,
+                   key=lambda d: d[1][0], reverse=True))
+            min_Vk_Score = matched_graphs[-1][1][0]
+        elif count > k:
+            if matched_result[0] > min_Vk_Score:
+                min_Vk_Score = matched_graphs[-1][1][0]
+                matched_graphs.pop()
+                matched_graphs.append([v0,matched_result])
+                matched_graphs=deque(sorted(matched_graphs,
+                   key=lambda d: d[1][0], reverse=True))
+            else:   # not in the topk list
+                pass
+        count+=1
+
+    matched_graphs=deque(sorted(matched_graphs,
+                   key=lambda d: d[1][0], reverse=True))
         # print '-------------'
-        break
+        # break
         # if count>1:
         #     break
         # else:
         #     count+=1
         #     print '======================================================'
 
-    top_k = sorted(focus_score.iteritems(),
-                   key=lambda d: d[1][0], reverse=True)[:k]
-    for _ in top_k:
-        print "graph:\n", _
-        print "- matched_graphs: \n", matched_graphs[_[0]]
-        # print "- visited_vs: \n",visited_vs[_[0]]
-        # print "- visited_es: \n",visited_es[_[0]]
-        print '---------------'
+    for _ in matched_graphs:
+        print "graph:", _[0]
+        print _[1]
+    print 'min_Vk_Score',min_Vk_Score
+    #     # print "- visited_vs: \n",visited_vs[_[0]]
+    #     # print "- visited_es: \n",visited_es[_[0]]
+    #     print '---------------'
+    # print top_k
     # gg=networkx_graph(g.get_vertices(),edges,'g')
 if __name__ == '__main__':
     print(timeit.timeit("main()", setup="from __main__ import main", number=1))
