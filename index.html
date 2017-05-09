@@ -1,165 +1,229 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-            <title>
-                子图匹配
-            </title>
-            <!-- 引入 echarts.js -->
-            <style>
-                .title {
-            font-size: 30px;
-            text-align: center;
-        }
-        input{
-            display: inline;
-            width: 30px;
-        }
-        select {
-            display: inline;
-            width: 100px;
-        }
-        #charts {
-            margin-top: 50px;
-        }
-        .chart {
-            display: inline-block;
-        }
-            </style>
-            <script src="https://cdn.bootcss.com/echarts/3.5.4/echarts.common.js">
-            </script>
-            <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js">
-            </script>
-        </meta>
-    </head>
-    <body>
-        <div class="title">
-            基于异构网络的top-k子图匹配算法
-        </div>
-        <div>
-            <br/>
-            <br/>
-        </div>
-        <div>
-            <label for="g">
-                数据图 G：
-            </label>
-            <select id="g">
-                <option value="data.json">
-                    data.json
-                </option>
-                <option value="simple.json">
-                    simple.json
-                </option>
-                <option value="small.json">
-                    small.json
-                </option>
-            </select>
-            <label for="ql">
-                查询图 Q：
-            </label>
-            <select id="q">
-                <option value="graph1">
-                    1-简单图
-                </option>
-                <option value="graph2">
-                    2-多重循环图
-                </option>
-                <option value="graph3">
-                    3-简单图加长
-                </option>
-            </select>
-            <label for="q">
-                是否执行过滤：
-            </label>
-            <select id="filterFlag">
-                <option value="0">
-                    不过滤
-                </option>
-                <option value="1">
-                    过滤
-                </option>
-            </select>
-            <label for="k">
-                选取top:
-            </label>
-            <input id="k" name="k" type="text">
-                <button id="button">
-                    运行
-                </button>
-            </input>
-        </div>
-        <div id="charts">
-        </div>
-        <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-        <!-- <div id="main" style="width: 600px;height:400px;">
-        </div> -->
-        <script type="text/javascript">
-            var showChart = function(content_json) {
-                console.log(content_json);
-            var charts = document.getElementById("charts");
-            charts.innerHTML = '';
-            for(var i = 0; i < k;i++) {
-                var id = 'chart' + i;
-                var div = document.createElement('div');
-                div.id = id;
-                div.className="chart";
-                div.style = "width: 600px;height:400px;";
-                // var div = '<div id="' + id + '" style=></div>';
-                charts.append(div);
-                var myChart = echarts.init(document.getElementById(id));
-                // 指定图表的配置项和数据
-                var option = {
-                    title: {
-                        text: 'ECharts 入门示例'
-                    },
-                    tooltip: {},
-                    legend: {
-                        data:['销量']
-                    },
-                    xAxis: {
-                        data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
-                    },
-                    yAxis: {},
-                    series: [{
-                        name: '销量',
-                        type: 'bar',
-                        data: [5, 20, 36, 10, 10, 20]
-                    }]
-                };
-                 // 使用刚指定的配置项和数据显示图表。
-                myChart.setOption(option);
-            }
-            // 基于准备好的dom，初始化echarts实例
-            // var myChart = echarts.init(document.getElementById('main'));
 
-            
-        }
-        var button = document.getElementById("button");
-        button.onclick = function() {
-            var k = document.getElementById("k").value;
-            var g = document.getElementById("g").value;
-            var q = document.getElementById("q").value;
-            var filterFlag = document.getElementById("filterFlag").value;
-            // console.log(k);
-            // console.log(g);
-            // console.log(q);
-            // console.log(filterFlag);
-            $.ajax({
-                url: '/match_graph',
-                method: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({
-                    'k': k,
-                    'g': g,
-                    'q': q,
-                    'filterFlag':filterFlag
-                }),
-                success: function(ret) {
-                    showChart(ret);
+<head>
+    <meta charset="utf-8">
+    <title>
+        子图匹配
+    </title>
+    <!-- 引入 echarts.js -->
+    <style>
+    .title {
+        font-size: 30px;
+        text-align: center;
+    }
+    
+    input {
+        display: inline;
+        width: 30px;
+    }
+    
+    select {
+        display: inline;
+        width: 100px;
+    }
+    
+    #charts {
+        margin-top: 50px;
+    }
+    
+    .chart {
+        display: inline-block;
+    }
+    </style>
+    <script src="https://cdn.bootcss.com/echarts/3.5.4/echarts.min.js"></script>
+    </script>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js">
+    </script>
+    </meta>
+</head>
+
+<body>
+    <div class="title">
+        基于异构网络的top-k子图匹配算法
+    </div>
+    <div>
+        <br/>
+        <br/>
+    </div>
+    <div>
+        <label for="g">
+            数据图 G：
+        </label>
+        <select id="g">
+            <option value="data.json">
+                data.json
+            </option>
+            <option value="simple.json">
+                simple.json
+            </option>
+            <option value="small.json">
+                small.json
+            </option>
+        </select>
+        <label for="ql">
+            查询图 Q：
+        </label>
+        <select id="q">
+            <option value="graph1">
+                1-简单图
+            </option>
+            <option value="graph2">
+                2-多重循环图
+            </option>
+            <option value="graph3">
+                3-简单图加长
+            </option>
+        </select>
+        <label for="q">
+            是否执行过滤：
+        </label>
+        <select id="filterFlag">
+            <option value="0">
+                不过滤
+            </option>
+            <option value="1">
+                过滤
+            </option>
+        </select>
+        <label for="k">
+            选取top:
+        </label>
+        <input id="k" name="k" type="text">
+        <button id="button">
+            运行
+        </button>
+        </input>
+    </div>
+    <div id="charts">
+    </div>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <!-- <div id="main" style="width: 600px;height:400px;">
+        </div> -->
+    <script type="text/javascript">
+    var showChart = function(content_json, k) {
+        content_json = JSON.parse(content_json);
+        console.log(content_json);
+        console.log(k);
+        var charts = document.getElementById("charts");
+        charts.innerHTML = '';
+        for (var i = 0; i < k; i++) {
+            var id = 'chart' + i;
+            var div = document.createElement('div');
+            div.id = id;
+            div.className = "chart";
+            div.style = "width: 600px;height:400px;";
+            // var div = '<div id="' + id + '" style=></div>';
+            charts.append(div);
+            var myChart = echarts.init(document.getElementById(id));
+            myChart.showLoading();
+             myChart.hideLoading();
+            console.log(myChart)
+            // 指定图表的配置项和数据---------------------
+            graph = content_json.matched_graphs[i];
+            var nodes = [];
+            var tmp_nodes = [];
+            var links = [];
+            var categories = [
+                {
+                    name: '0'
+                },{
+                    name: '1'
                 }
-            })
+            ];
+            graph.g.forEach(function(node, index) {
+                var pushNode0 = {id:node[0],category:0,name:node[0]};
+                var pushNode1 = {id:node[1],category:1,name:node[1]};
+                var firstIndex = tmp_nodes.indexOf(node[0]);
+                var secondIndex = tmp_nodes.indexOf(node[1]);
+                if(firstIndex == -1) {
+                    nodes.push(pushNode0);
+                    tmp_nodes.push(node[0]);
+                }
+                if(secondIndex == -1) {
+                    nodes.push(pushNode1);
+                    tmp_nodes.push(node[1]);
+                }
+                links.push({
+                    id: index,
+                    source:node[0],
+                    target: node[1]
+                });
+            });
+            console.log(JSON.stringify(nodes), JSON.stringify(links))
+            // console.log(categories);
+            option = {
+                title: {
+                    text: 'matchs',
+                    subtext: 'Default layout',
+                    top: 'bottom',
+                    left: 'right'
+                },
+                tooltip: {},
+                legend: [{
+                    // selectedMode: 'single',
+                    data: categories.map(function(a) {
+                        return a.name;
+                    })
+                }],
+                animationDuration: 1500,
+                animationEasingUpdate: 'quinticInOut',
+                series: [{
+                    name: 'match',
+                    type: 'graph',
+                    layout: 'circular',
+                    data: nodes,
+                    links: links,
+                    categories: categories,
+                    roam: true,
+                    label: {
+                        normal: {
+                            position: 'right',
+                            formatter: '{b}'
+                        }
+                    },
+                    lineStyle: {
+                        normal: {
+                            color: 'source',
+                            curveness: 0.3
+                        }
+                    }
+                }]
+            };
+
+            myChart.setOption(option);
         }
-        </script>
-    </body>
+        // 基于准备好的dom，初始化echarts实例-------------------
+        // var myChart = echarts.init(document.getElementById('main'));
+
+
+    }
+    var button = document.getElementById("button");
+    button.onclick = function() {
+        var k = document.getElementById("k").value;
+        var g = document.getElementById("g").value;
+        var q = document.getElementById("q").value;
+        var filterFlag = document.getElementById("filterFlag").value;
+        // console.log(k);
+        // console.log(g);
+        // console.log(q);
+        // console.log(filterFlag);
+        $.ajax({
+            url: '/match_graph',
+            method: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                'k': k,
+                'g': g,
+                'q': q,
+                'filterFlag': filterFlag
+            }),
+            success: function(ret) {
+                showChart(ret, k);
+            }
+        })
+    }
+    </script>
+</body>
+
 </html>

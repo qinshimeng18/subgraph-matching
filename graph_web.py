@@ -12,7 +12,9 @@ from pprint import pprint
 
 
 define("port", default=8888, help="run on the given port", type=int)
-
+class GexfHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render('index.html', state=1)
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
@@ -45,10 +47,13 @@ class Application(tornado.web.Application):
         handlers = [
             (r'/', IndexHandler),
             (r'/match_graph',MatchGraphHandler),
+            (r'/les-miserables\.gexf',GexfHandler),
+            # (r"/(apple-touch-icon\.png)", tornado.web.StaticFileHandler, dict(path=settings['static_path']))
         ]
         settings = dict(
             cookie_secret="7CA71A57B571B5AEAC5E64C6042415DE",
-            debug=True
+            debug=True,
+            static_path=os.path.join(os.path.dirname(__file__), 'static')
 
         )
 

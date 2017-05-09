@@ -387,10 +387,11 @@ def isSame(u, v, q, g, level=0, lost_score=0, min_Vk_Score=-1, filterFlag=1):
         return {'q': set(), 'g': set(), 'focus': '', 'match_score': -1}
     else:
         lost_score += filter_result
-
+    print 'matchArray',matchArray,'\n'
     for i in matchArray:
         ret['q'].add((u, i[0]))
         ret['g'].add((v, i[1]))
+        # print ret
         ret_temp = isSame(i[0], i[1], q, g,
                           level, lost_score, min_Vk_Score, filterFlag)
         if ret_temp['match_score'] == -1:  # m = -1 means v is not in M(G,Q,Vk)
@@ -419,7 +420,7 @@ def get_graph_focus(q, g):
     return graph_focus
 
 
-def main(graph_path='data.json', query_graph='graph1', k=3, filterFlag=1, commend=1):
+def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commend=1):
     print "start main"
 
     # xml to json ; then json to graph
@@ -428,12 +429,13 @@ def main(graph_path='data.json', query_graph='graph1', k=3, filterFlag=1, commen
     # loadxml(xml_in,json_out)
     if commend == 1:
         # create Data graph and Query graph
-        k = 5
+        k = 1
         graph_path = 'data.json'
         query_graph = "graph3"
         filterFlag = True
     elif commend == 0:
         pass
+    print '&&&k&&&:',k
     graph_focus = []
     min_Vk_Score = -1
     opts, args = getopt.getopt(sys.argv[1:], 'hg:q:k:f:')
@@ -512,6 +514,7 @@ def main(graph_path='data.json', query_graph='graph1', k=3, filterFlag=1, commen
                 pass
         count += 1
         # break
+    print ret
     for _ in matched_graphs:
         _['g']=list(_['g'])
         _['q']=list(_['q'])
@@ -528,6 +531,7 @@ def main(graph_path='data.json', query_graph='graph1', k=3, filterFlag=1, commen
     printOrWrite('top-k:' + str(k), writeToFileFlag, f)
     printOrWrite('match_score: ' + '  '.join([str(i['match_score'])
                                               for i in matched_graphs]), writeToFileFlag, f)
+    printOrWrite('graphs:'+str( matched_graphs), writeToFileFlag, f)
     f.close()
     return {'graph_path': graph_path,
             'query_graph':query_graph,
@@ -544,6 +548,6 @@ def main(graph_path='data.json', query_graph='graph1', k=3, filterFlag=1, commen
     # print get_u0_infuence(q)
 if __name__ == '__main__':
     print 'process id:', os.getpid()
-    print(timeit.timeit("main(graph_path ='data.json',query_graph ='graph1',k =4,filterFlag = 1)",
+    print(timeit.timeit("main(graph_path ='data.json',query_graph ='graph1',k =1,filterFlag = 1)",
                         setup="from __main__ import main", number=1))
     # f.close()
