@@ -118,7 +118,7 @@
             var myChart = echarts.init(document.getElementById(id));
             myChart.showLoading();
              myChart.hideLoading();
-            console.log(myChart)
+            // console.log(myChart)
             // 指定图表的配置项和数据---------------------
             graph = content_json.matched_graphs[i];
             var nodes = [];
@@ -126,9 +126,9 @@
             var links = [];
             var categories = [
                 {
-                    name: '0'
+                    name: 'Author'
                 },{
-                    name: '1'
+                    name: 'Paper'
                 }
             ];
             graph.g.forEach(function(node, index) {
@@ -150,14 +150,17 @@
                     target: node[1]
                 });
             });
-            console.log(JSON.stringify(nodes), JSON.stringify(links))
+            // console.log(JSON.stringify(nodes), JSON.stringify(links))
+            console.log('map')
+            console.log(categories.map(function(a) {
+                        return a.name;}))
             // console.log(categories);
             option = {
                 title: {
-                    text: 'matchs',
+                    text: 'matchs'+i,
                     subtext: 'Default layout',
                     top: 'bottom',
-                    left: 'right'
+                    left: 'center'
                 },
                 tooltip: {},
                 legend: [{
@@ -166,7 +169,7 @@
                         return a.name;
                     })
                 }],
-                animationDuration: 1500,
+                animationDuration: 100,
                 animationEasingUpdate: 'quinticInOut',
                 series: [{
                     name: 'match',

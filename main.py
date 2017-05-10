@@ -347,7 +347,6 @@ def isSame(u, v, q, g, level=0, lost_score=0, min_Vk_Score=-1, filterFlag=1):
     # o(n^3)  n*(n-1)*(n-2)....
     combinations = get_combinations(children_u, children_v, [])
     """ [ [(Um,Vn),(U,V)] , [(),()] ]"""
-
     # 得到u_children匹配的结点对
     if combinations and combinations[0]:
         u_index, v_index = (0, 1) if combinations[0][
@@ -387,7 +386,7 @@ def isSame(u, v, q, g, level=0, lost_score=0, min_Vk_Score=-1, filterFlag=1):
         return {'q': set(), 'g': set(), 'focus': '', 'match_score': -1}
     else:
         lost_score += filter_result
-    print 'matchArray',matchArray,'\n'
+    # print 'matchArray',matchArray,'\n'
     for i in matchArray:
         ret['q'].add((u, i[0]))
         ret['g'].add((v, i[1]))
@@ -421,71 +420,56 @@ def get_graph_focus(q, g):
 
 
 def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commend=1):
-    print "start main"
-
     # xml to json ; then json to graph
     # xml_in = 'small.xml'
     # json_out = 'small.json'
     # loadxml(xml_in,json_out)
-    if commend == 1:
-        # create Data graph and Query graph
-        k = 1
+    graph_focus = []
+    min_Vk_Score = -1
+    if commend == 1: # 命令行运行
+        k = 1 #自定义
         graph_path = 'data.json'
         query_graph = "graph3"
         filterFlag = True
-    elif commend == 0:
+        opts, args = getopt.getopt(sys.argv[1:], 'hg:q:k:f:')
+        for opt, value in opts:#或者从命令行获取参数
+            if opt == 'g':
+                graph_path = value
+            elif opt == 'q':
+                query_graph = value
+            elif opt == 'k':
+                k = value
+            elif opt == 'f':
+                filterFlag = value
+            elif opt == 'h':
+                def usage():
+                    print   """    
+                            参数使用说明:  
+                            -g data graph
+                            -q query graph
+                            -k top k 
+                            -f filter 0/1
+                            """
+    elif commend == 0:#从web过来的命令 直接跳过。已赋值
         pass
-    print '&&&k&&&:',k
-    graph_focus = []
-    min_Vk_Score = -1
-    opts, args = getopt.getopt(sys.argv[1:], 'hg:q:k:f:')
-    # print 'opts:', opts, ' args:', args
-    for opt, value in opts:
-        if opt == 'g':
-            graph_path = value
-        elif opt == 'q':
-            query_graph = value
-        elif opt == 'k':
-            k = value
-        elif opt == 'f':
-            filterFlag = value
-        elif opt == 'h':
-            def usage():
-                print   """    
-                        参数使用说明:  
-                        -g data graph
-                        -q query graph
-                        -k top k 
-                        -f filter 0/1
-                        """
-
     u0 = '1'  # the first node in query graph
     matched_graphs = []
-    global u0_infuence
-
     edges, vertices = label_edges_vertices_from_json(graph_path)
     g = Graph(vertices, edges, False)  # 边的数量会多一半
     q = set_query_graph(query_graph)
-
     start = time.time()
-
     setLevel(q, u0)
     if filterFlag:
         filter1_in_category_set(q, g)
+    global u0_infuence
     u0_infuence = get_u0_infuence(q)
     graph_focus = get_graph_focus(q, g)
-    # print_graph(g) ##pp1
-    # pprint(q.get_vertices())##pp1
     # 得到graph中所有的focus点（用category做比较）
-    # p = Pool()
-    # for i in range(5):
-    #     p.apply_async(long_time_task, args=(i,))
-    # print 'Waiting for all subprocesses done...'
-    # p.close()
-    # p.join()
     count = 1
+    global matched_tracks
     for v0 in graph_focus:
-        matched = []
+        # matched = []
+        matched_tracks = {}
         visited = [u0, v0]
         visited_e = []
         level = 0
@@ -497,6 +481,8 @@ def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commen
         # 更新相似topk的集合 & 得到最小匹配分
         ret['focus'] = v0
         if count < k:
+            # print v0,'\n',ret
+            print count,'<',k
             matched_graphs.append(ret)
         elif count == k:
             matched_graphs.append(ret)
@@ -514,14 +500,14 @@ def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commen
                 pass
         count += 1
         # break
-    print ret
+    # print matched_graphs
     for _ in matched_graphs:
         _['g']=list(_['g'])
         _['q']=list(_['q'])
     # matched_graphs = sorted(matched_graphs,
     # key=lambda d: d['match_score'], reverse=True)
     calc_time = (time.time() - start)
-    writeToFileFlag = True
+    writeToFileFlag = False
     f = open('mutil_proc.txt', 'a')
     printOrWrite('graph_path:' + graph_path + '\t' +
                  'query_graph:' + query_graph, writeToFileFlag, f)
@@ -531,7 +517,7 @@ def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commen
     printOrWrite('top-k:' + str(k), writeToFileFlag, f)
     printOrWrite('match_score: ' + '  '.join([str(i['match_score'])
                                               for i in matched_graphs]), writeToFileFlag, f)
-    printOrWrite('graphs:'+str( matched_graphs), writeToFileFlag, f)
+    printOrWrite('graphs:'+str( matched_graphs[0]), writeToFileFlag, f)
     f.close()
     return {'graph_path': graph_path,
             'query_graph':query_graph,
