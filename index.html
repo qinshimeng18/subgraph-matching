@@ -24,11 +24,27 @@
     }
     
     #charts {
+        background-color:#eeeeee;
         margin-top: 50px;
     }
-    
     .chart {
         display: inline-block;
+        left:100px;
+        top:30%;
+    }
+    .first{
+        display: inline-block;
+    }
+    .show_q {
+        position:relative;
+        left:70%;
+        height: 20%
+    }
+    .info_q{
+        position:absolute;
+        right:50%;
+    }
+    #first{
     }
     </style>
     <script src="https://cdn.bootcss.com/echarts/3.5.4/echarts.min.js"></script>
@@ -86,14 +102,23 @@
                 过滤
             </option>
         </select>
-        <label for="k">
+        <label for="k" >
             选取top:
         </label>
-        <input id="k" name="k" type="text">
+        <input id="k" name="k" type="text" value="6">
         <button id="button">
             运行
         </button>
         </input>
+    </div>
+    <div id = 'first' style = "width: 900px;height:300px;"  class="first">
+        <div id='graph_q' className = "show_q" style = "width: 500px;height:300px;top:20%;left:30%">   
+        </div>
+        <div class= 'info_q' style = "width: 400px;height:300px;top:50%;right:10%">
+        <p id = 'node_num'>  </p> 
+        <p id = 'calc_time'></p>
+        <p id = 'num'></p>
+         </div>
     </div>
     <div id="charts">
     </div>
@@ -103,16 +128,76 @@
     <script type="text/javascript">
     var showChart = function(content_json, k) {
         content_json = JSON.parse(content_json);
-        console.log(content_json);
-        console.log(k);
+        // console.log(content_json);
+        // console.log(k);
+        var graph_q = document.getElementById("graph_q");
+
+        //======================Q=============
+        var info_q = document.getElementById("calc_time");
+        info_q.innerText = '计算耗时：'+content_json['calc_time'];
+        var myChart_q = echarts.init(graph_q);
+        myChart_q.showLoading();
+        myChart_q.hideLoading();
+        var nodes_q = content_json['graph_q']['nodes']
+        var links_q = content_json['graph_q']['edges']
+        // console.log(JSON.stringify(nodes_q), JSON.stringify(links_q))
+        var categories_q = [
+                {
+                    name: 'Author'
+                },{
+                    name: 'Paper'
+                }
+            ];
+        option = {
+                title: {
+                    text: 'Query Graph',
+                    // subtext: document.getElementById("q").value,
+                    top: 'center',
+                    left: 'left'
+                },
+                tooltip: {},
+                legend: [{
+                    // selectedMode: 'single',
+                    data: categories_q.map(function(a) {
+                        return a.name;
+                    })
+                }],
+                animationDuration: 100,
+                animationEasingUpdate: 'quinticInOut',
+                series: [{
+                    name: 'query graph',
+                    type: 'graph',
+                    layout: 'circular',
+                    data: nodes_q,
+                    links: links_q,
+                    categories: categories_q,
+                    roam: true,
+                    label: {
+                        normal: {
+                            position: 'right',
+                            formatter: '{b}'
+                        }
+                    },
+                    lineStyle: {
+                        normal: {
+                            color: 'source',
+                            curveness: 0.3
+                        }
+                    }
+                }]
+            };
+            // console.log(JSON.stringify(option));
+            myChart_q.setOption(option);
+
+//--===================top-k=================-------
         var charts = document.getElementById("charts");
         charts.innerHTML = '';
         for (var i = 0; i < k; i++) {
             var id = 'chart' + i;
             var div = document.createElement('div');
-            div.id = id;
+            div.id = id
             div.className = "chart";
-            div.style = "width: 600px;height:400px;";
+            div.style = "width: 330px;height:330px;";
             // var div = '<div id="' + id + '" style=></div>';
             charts.append(div);
             var myChart = echarts.init(document.getElementById(id));
@@ -151,13 +236,13 @@
                 });
             });
             // console.log(JSON.stringify(nodes), JSON.stringify(links))
-            console.log('map')
-            console.log(categories.map(function(a) {
-                        return a.name;}))
+            // console.log('map')
+            // console.log(categories.map(function(a) {
+            //             return a.name;}))
             // console.log(categories);
             option = {
                 title: {
-                    text: 'matchs'+i,
+                    text: 'Matched Graph '+(i+1),
                     subtext: 'Default layout',
                     top: 'bottom',
                     left: 'center'
@@ -193,7 +278,7 @@
                     }
                 }]
             };
-
+// console.log(JSON.stringify(option));
             myChart.setOption(option);
         }
         // 基于准备好的dom，初始化echarts实例-------------------

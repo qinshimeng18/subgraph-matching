@@ -25,7 +25,7 @@ class MatchGraphHandler(tornado.web.RequestHandler):
         data= tornado.escape.json_decode(self.request.body)
         if not  data['k']:
             data['k'] = 4
-        print 'data:',data
+        print 'request data:',data
         ret = main(graph_path=data['g'], query_graph=data['q'], k=int(data['k']), filterFlag=int(data['filterFlag']), commend=0)
         ret = json.dumps(ret,ensure_ascii=False, indent=2)
         print 'ret: ',ret
@@ -48,6 +48,7 @@ class Application(tornado.web.Application):
             (r'/', IndexHandler),
             (r'/match_graph',MatchGraphHandler),
             (r'/les-miserables\.gexf',GexfHandler),
+            # (r'/q'),
             # (r"/(apple-touch-icon\.png)", tornado.web.StaticFileHandler, dict(path=settings['static_path']))
         ]
         settings = dict(
