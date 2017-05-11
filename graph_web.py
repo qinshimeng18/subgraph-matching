@@ -28,7 +28,8 @@ class MatchGraphHandler(tornado.web.RequestHandler):
         print 'request data:',data
         ret = main(graph_path=data['g'], query_graph=data['q'], k=int(data['k']), filterFlag=int(data['filterFlag']), commend=0)
         ret = json.dumps(ret,ensure_ascii=False, indent=2)
-        print 'ret: ',ret
+        # print 'ret: ',ret
+        print 'get from main'
         self.write(ret)
     # def post(self):
     #     print 'post message'

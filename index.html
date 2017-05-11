@@ -95,11 +95,11 @@
             是否执行过滤：
         </label>
         <select id="filterFlag">
-            <option value="0">
-                不过滤
-            </option>
             <option value="1">
                 过滤
+            </option>
+            <option value="0">
+                不过滤
             </option>
         </select>
         <label for="k" >
@@ -186,24 +186,22 @@
                     }
                 }]
             };
-            // console.log(JSON.stringify(option));
             myChart_q.setOption(option);
 
 //--===================top-k=================-------
         var charts = document.getElementById("charts");
         charts.innerHTML = '';
         for (var i = 0; i < k; i++) {
+        
             var id = 'chart' + i;
             var div = document.createElement('div');
             div.id = id
             div.className = "chart";
             div.style = "width: 330px;height:330px;";
-            // var div = '<div id="' + id + '" style=></div>';
             charts.append(div);
             var myChart = echarts.init(document.getElementById(id));
             myChart.showLoading();
              myChart.hideLoading();
-            // console.log(myChart)
             // 指定图表的配置项和数据---------------------
             graph = content_json.matched_graphs[i];
             var nodes = [];
@@ -211,35 +209,34 @@
             var links = [];
             var categories = [
                 {
-                    name: 'Author'
-                },{
                     name: 'Paper'
+                },{
+                    name: 'Author'
                 }
             ];
-            graph.g.forEach(function(node, index) {
-                var pushNode0 = {id:node[0],category:0,name:node[0]};
-                var pushNode1 = {id:node[1],category:1,name:node[1]};
-                var firstIndex = tmp_nodes.indexOf(node[0]);
-                var secondIndex = tmp_nodes.indexOf(node[1]);
-                if(firstIndex == -1) {
-                    nodes.push(pushNode0);
-                    tmp_nodes.push(node[0]);
-                }
-                if(secondIndex == -1) {
-                    nodes.push(pushNode1);
-                    tmp_nodes.push(node[1]);
-                }
-                links.push({
-                    id: index,
-                    source:node[0],
-                    target: node[1]
-                });
-            });
+            // graph.g.forEach(function(node, index) {
+            //     var pushNode0 = {id:node[0],category:0,name:node[0]};
+            //     var pushNode1 = {id:node[1],category:1,name:node[1]};
+            //     var firstIndex = tmp_nodes.indexOf(node[0]);
+            //     var secondIndex = tmp_nodes.indexOf(node[1]);
+            //     if(firstIndex == -1) {
+            //         nodes.push(pushNode0);
+            //         tmp_nodes.push(node[0]);
+            //     }
+            //     if(secondIndex == -1) {
+            //         nodes.push(pushNode1);
+            //         tmp_nodes.push(node[1]);
+            //     }
+            //     links.push({
+            //         id: index,
+            //         source:node[0],
+            //         target: node[1]
+            //     });
+            // });
+            // console.log(JSON.stringify(nodes), JSON.stringify(links));
+            nodes = graph.node;
+            links = graph.links;
             // console.log(JSON.stringify(nodes), JSON.stringify(links))
-            // console.log('map')
-            // console.log(categories.map(function(a) {
-            //             return a.name;}))
-            // console.log(categories);
             option = {
                 title: {
                     text: 'Matched Graph '+(i+1),
@@ -278,7 +275,6 @@
                     }
                 }]
             };
-// console.log(JSON.stringify(option));
             myChart.setOption(option);
         }
         // 基于准备好的dom，初始化echarts实例-------------------
@@ -292,10 +288,6 @@
         var g = document.getElementById("g").value;
         var q = document.getElementById("q").value;
         var filterFlag = document.getElementById("filterFlag").value;
-        // console.log(k);
-        // console.log(g);
-        // console.log(q);
-        // console.log(filterFlag);
         $.ajax({
             url: '/match_graph',
             method: 'POST',

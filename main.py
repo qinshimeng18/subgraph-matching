@@ -353,14 +353,18 @@ def isSame(u, v, q, g, level=0, lost_score=0, min_Vk_Score=-1, filterFlag=1):
     global matched_tracks
     children_u, children_v = filter_uv_children(u, v, q, g, level)
     if len(children_u) == 0 or len(children_v) == 0:
-        return {'q': set(), 'g': set(), 'focus': '', 'match_score': 0}
+        return {'node':[],'links':[],'q': set(), 'g': set(), 'focus': '', 'match_score': 0}
     # print 'u:',u,' \t children:',children_u
     # print 'v:',v,'\t children:',children_v
     level += 1
     matchArray = []
     lost_children = set()
     m_u_list = set()
-    ret = {'q': set(), 'g': set(), 'focus': '', 'match_score': 0}
+    ret = {'node':[],'links':[],'q': set(), 'g': set(), 'focus': '', 'match_score': 0}
+    category = 0 if q.vertices[u]['category']=='paper' else 1
+    ret['node'].append((v,category,v))
+    # category = 0 if q.vertices[i[0]]['category']=='paper' else 1 
+    # ret['node'].append({'id':i[1],'category':category,'name':i[1]})
     # o(n^3)  n*(n-1)*(n-2)....
     combinations = get_combinations(children_u, children_v, [])
     """ [ [(Um,Vn),(U,V)] , [(),()] ]"""
@@ -384,20 +388,13 @@ def isSame(u, v, q, g, level=0, lost_score=0, min_Vk_Score=-1, filterFlag=1):
                 matchArray = simi_edges
         matcth_children = set([mline[0] for mline in matchArray])
         lost_children = set(children_u) - matcth_children
-        # print 'matcth_children',matcth_children ##pp1
-        # print 'lost_children',lost_children ##pp1
-    # print 'matchArray:', matchArray ##pp1
-    # print 'matchscroe:', match_score ##pp1
-    # print  'lost_score:',lost_score
-    # print 'min_Vk_Score',min_Vk_Score
-    # lost_score = 损失直达边和直达点的子节点
 
     filter_result = 0
     if filterFlag:
         filter_result = filter2_lost_gt_minVk(
             lost_children, lost_score, q, u, level, min_Vk_Score)
     if filter_result == -1:
-        return {'q': set(), 'g': set(), 'focus': '', 'match_score': -1}
+        return {'node':[],'links':[],'q': set(), 'g': set(), 'focus': '', 'match_score': -1}
     else:
         lost_score += filter_result
     # print 'matchArray',matchArray,'\n'
@@ -406,14 +403,23 @@ def isSame(u, v, q, g, level=0, lost_score=0, min_Vk_Score=-1, filterFlag=1):
         matched_tracks['matched_u_e'].append((u, i[0]))
         ret['q'].add((u, i[0]))
         ret['g'].add((v, i[1]))
+        ret['links'].append({'id':len(ret['links']),'source':v,'target':i[1]})
+        category = 0 if q.vertices[u]['category']=='paper' else 1
+        ret['node'].append((v,category,v))
+        category = 0 if q.vertices[i[0]]['category']=='paper' else 1 
+        ret['node'].append((i[1],category,i[1]))
+        
         # print ret
         ret_temp = isSame(i[0], i[1], q, g,
                           level, lost_score, min_Vk_Score, filterFlag)
         if ret_temp['match_score'] == -1:  # m = -1 means v is not in M(G,Q,Vk)
-            return {'q': set(), 'g': set(), 'focus': '', 'match_score': -1}
+            return {'node':[],'links':[],'q': set(), 'g': set(), 'focus': '', 'match_score': -1}
         ret['match_score'] += ret_temp['match_score']
         ret['q'] = ret['q'] | ret_temp['q']
         ret['g'] = ret['g'] | ret_temp['g']
+        ret['node'].extend(ret_temp['node'])
+        ret['links'].extend(ret_temp['links'])
+       
         # break
 
     return ret
@@ -528,11 +534,20 @@ def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commen
                 pass
         count += 1
         # break
+        
     for _ in matched_graphs:
         _['g'] = list(_['g'])
         _['q'] = list(_['q'])
-    # matched_graphs = sorted(matched_graphs,
-    # key=lambda d: d['match_score'], reverse=True)
+        _['node'] = list(set(_['node']))
+        temp=[]
+        for i in _['node']:
+            temp.append({'id':i[0],'category':i[1],'name':i[2]})
+        _['node'] = temp
+        index= 0
+        for i in _['links']:
+            i['id'] = index
+            index +=1
+
     calc_time = (time.time() - start)
     writeToFileFlag = True
     f = open('mutil_proc.txt', 'a')
@@ -544,7 +559,7 @@ def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commen
     printOrWrite('top-k:' + str(k), writeToFileFlag, f)
     printOrWrite('match_score: ' + '  '.join([str(i['match_score'])
                                               for i in matched_graphs]), writeToFileFlag, f)
-    printOrWrite('graphs:' + str(matched_graphs[0]), writeToFileFlag, f)
+    printOrWrite('graphs:' + str(matched_graphs), writeToFileFlag, f)
     f.close()
     graph_q = return_Q(q)
     return {'graph_path': graph_path,
