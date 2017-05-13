@@ -17,17 +17,30 @@ G：匹配上的matchArray蕴含的边集合(包括待访问)和已经访问过�
 1.
 2.
 
-##UV
+##UV  
 matched_tracks =
  {'matched_u':[],
  'matched_v':[],
  'matched_u_e':[],
  'matched_v_e':[]
  ,'to_match_u':[],
- 'to_match_v':[]}
-
-
-
+ 'to_match_v':[]}  
+##数据  
+- 13k28k  
+边的数量：29436
+点的数量：13129
+- 8k13k.json  
+边的数量：13742
+点的数量：8538
+- 5k9k  
+边的数量：9100
+点的数量：5174
+- 3k5k.json   
+边的数量：5768
+点的数量：3213
+- 1k2k.json   
+边的数量：2028
+点的数量：1390
 
 
 

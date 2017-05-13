@@ -102,7 +102,6 @@ def edges_vertices_from_json(path):
 
     return edges, vertices
 
-
 def networkx_graph(vertices, edges, name='default'):
     """
     利用networkx绘图
@@ -140,7 +139,6 @@ def networkx_graph(vertices, edges, name='default'):
     # gg=nx.Graph()
     # gg.add_edges_from(g.adjacency_dict)
 
-
 def label_edges_vertices_from_json(path):
     """
     异构网络：人是种类category，教授、讲师和学生等是label
@@ -148,7 +146,6 @@ def label_edges_vertices_from_json(path):
         vertices = {name_vertex:[name,category,weight ==1 ]}
         edges = [(name_from,name_to)]
     """
-
     edges = []
     vertices = {}
     with open(path, 'r') as json_file:
@@ -170,34 +167,27 @@ def label_edges_vertices_from_json(path):
     del dblp
     return edges, vertices
 
-
 def set_query_graph(query_graph):
     """
     vertex id is number, category and label matters
     Returns:
         [query graph] -- 
     """
-
     query_graphs = json.load(open('query_graph.json', 'r'))
     vertices = query_graphs[query_graph]['vertices']
     edges_weight = query_graphs[query_graph]['edges_weight']
     q = QueryGraph(vertices, edges_weight, u0='1', is_directed=False)
     return q
 
-
 def print_graph(g):
     print '边的数量： ', len(g.get_edges())
     print '点的数量： ', len(g.get_vertices())
-    # print 'edges:   ',  dict(g.get_edges())
-    # print 'edges:   ',  g.get_edges()
-
 
 def out_gephi_csv(edges):
     with open('edges.csv', 'w') as f:
         for i in edges:
             f.write('\'' + str(i[0]) + '\'' + ',' +
                     '\'' + str(i[1]) + '\'' + '\n')
-
 
 def children_lost(q, u, level):
     """[summary]q,array, level
@@ -214,13 +204,11 @@ def children_lost(q, u, level):
         # lost_score += lost_score_child
     return lost_edges
 
-
 def judge(u, i, j, q, g):
     if q.get_vertex_category(i) == g.get_vertex_category(j):
         return q.adjacency_dict[u][i]
     else:
         return 0
-
 
 def setLevel(q, root):
     level = 0
@@ -458,13 +446,13 @@ def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commen
     # xml to json ; then json to graph
     # xml_in = 'small.xml'
     # json_out = 'small.json'
-    # loadxml(xml_in,json_out)
+    # loadxml('qian.xml','qian.json')
     graph_focus = []
     min_Vk_Score = -1
     if commend == 1:  # 命令行运行
         k = 1  # 自定义
-        graph_path = 'data.json'
-        query_graph = "graph3"
+        graph_path = 'qian.json'
+        query_graph = "graph1"
         filterFlag = True
         opts, args = getopt.getopt(sys.argv[1:], 'hg:q:k:f:')
         for opt, value in opts:  # 或者从命令行获取参数
@@ -505,7 +493,7 @@ def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commen
     for v0 in graph_focus:
         # matched = []
         matched_tracks = {'matched_u': [], 'matched_v': [], 'matched_u_e': [
-        ], 'matched_v_e': [], 'to_match_u': [], 'to_match_v': []}
+        ], 'matched_v_e': []}
         visited = [u0, v0]
         visited_e = []
         level = 0
@@ -550,7 +538,7 @@ def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commen
 
     calc_time = (time.time() - start)
     writeToFileFlag = True
-    f = open('mutil_proc.txt', 'a')
+    f = open('mutil_proc.txt', 'w')
     printOrWrite('graph_path:' + graph_path + '\t' +
                  'query_graph:' + query_graph, writeToFileFlag, f)
     printOrWrite('calc_time:' + str(calc_time), writeToFileFlag, f)
