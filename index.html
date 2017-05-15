@@ -115,10 +115,14 @@
         <button id="button">
             运行
         </button>
+        <button id = 'mutil_button'>
+            并行计算
+        </button>
         </input>
     </div>
     <div id = 'first' style = "width: 900px;height:300px;"  class="first">
         <div id='graph_q' className = "show_q" style = "width: 500px;height:300px;top:20%;left:30%">   
+  
         </div>
         <div class= 'info_q' style = "width: 400px;height:300px;top:50%;right:10%">
         <p id = 'node_num'>  </p> 
@@ -134,11 +138,7 @@
     <script type="text/javascript">
     var showChart = function(content_json, k) {
         content_json = JSON.parse(content_json);
-        // console.log(content_json);
-        // console.log(k);
         var graph_q = document.getElementById("graph_q");
-
-        //======================Q=============
         var info_q = document.getElementById("calc_time");
         info_q.innerText = '计算耗时：'+content_json['calc_time'];
         var myChart_q = echarts.init(graph_q);
@@ -146,7 +146,6 @@
         myChart_q.hideLoading();
         var nodes_q = content_json['graph_q']['nodes']
         var links_q = content_json['graph_q']['edges']
-        // console.log(JSON.stringify(nodes_q), JSON.stringify(links_q))
         var categories_q = [
                 {
                     name: 'Author'
@@ -157,13 +156,11 @@
         option = {
                 title: {
                     text: 'Query Graph',
-                    // subtext: document.getElementById("q").value,
                     top: 'center',
                     left: 'left'
                 },
                 tooltip: {},
                 legend: [{
-                    // selectedMode: 'single',
                     data: categories_q.map(function(a) {
                         return a.name;
                     })
@@ -193,7 +190,6 @@
                 }]
             };
             myChart_q.setOption(option);
-
 //--===================top-k=================-------
         var charts = document.getElementById("charts");
         charts.innerHTML = '';
@@ -220,39 +216,18 @@
                     name: 'Author'
                 }
             ];
-            // graph.g.forEach(function(node, index) {
-            //     var pushNode0 = {id:node[0],category:0,name:node[0]};
-            //     var pushNode1 = {id:node[1],category:1,name:node[1]};
-            //     var firstIndex = tmp_nodes.indexOf(node[0]);
-            //     var secondIndex = tmp_nodes.indexOf(node[1]);
-            //     if(firstIndex == -1) {
-            //         nodes.push(pushNode0);
-            //         tmp_nodes.push(node[0]);
-            //     }
-            //     if(secondIndex == -1) {
-            //         nodes.push(pushNode1);
-            //         tmp_nodes.push(node[1]);
-            //     }
-            //     links.push({
-            //         id: index,
-            //         source:node[0],
-            //         target: node[1]
-            //     });
-            // });
-            // console.log(JSON.stringify(nodes), JSON.stringify(links));
+           
             nodes = graph.node;
             links = graph.links;
-            // console.log(JSON.stringify(nodes), JSON.stringify(links))
             option = {
                 title: {
                     text: 'Matched Graph '+(i+1),
-                    subtext: 'Default layout',
+                    subtext: '123',
                     top: 'bottom',
                     left: 'center'
                 },
                 tooltip: {},
                 legend: [{
-                    // selectedMode: 'single',
                     data: categories.map(function(a) {
                         return a.name;
                     })
@@ -283,9 +258,6 @@
             };
             myChart.setOption(option);
         }
-        // 基于准备好的dom，初始化echarts实例-------------------
-        // var myChart = echarts.init(document.getElementById('main'));
-
 
     }
     var button = document.getElementById("button");
@@ -296,6 +268,27 @@
         var filterFlag = document.getElementById("filterFlag").value;
         $.ajax({
             url: '/match_graph',
+            method: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                'k': k,
+                'g': g,
+                'q': q,
+                'filterFlag': filterFlag
+            }),
+            success: function(ret) {
+                showChart(ret, k);
+            }
+        })
+    }
+    var mutil_button = document.getElementById('mutil_button');
+    mutil_button.onclick = function(){
+        var k = document.getElementById("k").value;
+        var g = document.getElementById("g").value;
+        var q = document.getElementById("q").value;
+        var filterFlag = document.getElementById("filterFlag").value;
+        $.ajax({
+            url: '/mutil',
             method: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({

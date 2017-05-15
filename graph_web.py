@@ -7,6 +7,7 @@ import tornado.web
 import os
 from tornado.options import define, options
 from main import main
+from mutil_main import mutil_main
 import json
 from pprint import pprint
 
@@ -15,7 +16,6 @@ define("port", default=8888, help="run on the given port", type=int)
 class GexfHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('index.html', state=1)
-
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('index.html', state=1)
@@ -31,6 +31,18 @@ class MatchGraphHandler(tornado.web.RequestHandler):
         # print 'ret: ',ret
         print 'get from main'
         self.write(ret)
+class MutilHandler(tornado.web.RequestHandler):
+    def post(self):
+            print 'post message'
+            data= tornado.escape.json_decode(self.request.body)
+            if not  data['k']:
+                data['k'] = 4
+            print 'request data:',data
+            ret = mutil_main(graph_path=data['g'], query_graph=data['q'], k=int(data['k']), filterFlag=int(data['filterFlag']), commend=0)
+            ret = json.dumps(ret,ensure_ascii=False, indent=2)
+            # print 'ret: ',ret
+            print 'get from main'
+            self.write(ret)
     # def post(self):
     #     print 'post message'
     #     data= tornado.escape.json_decode(self.request.body)
@@ -49,6 +61,7 @@ class Application(tornado.web.Application):
             (r'/', IndexHandler),
             (r'/match_graph',MatchGraphHandler),
             (r'/les-miserables\.gexf',GexfHandler),
+            (r'/mutil',MutilHandler),
             # (r'/q'),
             # (r"/(apple-touch-icon\.png)", tornado.web.StaticFileHandler, dict(path=settings['static_path']))
         ]
