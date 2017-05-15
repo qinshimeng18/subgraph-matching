@@ -9,7 +9,7 @@ def cutxml(xml_out):
     xml_out = xml_out
     count = 0 
     start = 360000
-    end = 398010
+    end = 378010
     flag = 0
     flag_end = 0 
     with open(xml_out,'w') as out:
@@ -54,11 +54,11 @@ def loadxml(xml_in,json_out):
     # print edges
     # print vertices
 if __name__ == '__main__':
-    xml_out = 'qian.xml'
     xml_out = './static/8k13k.xml'
+    xml_out = 'qian.xml'
     cutxml(xml_out)
     # xml = './static/8k13k.xml'
     xml = xml_out
-    json_out = 'qian.json'
     json_out = './static/8k13k.json'
+    json_out = 'qian.json'
     loadxml(xml,json_out)

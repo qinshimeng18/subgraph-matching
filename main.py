@@ -451,7 +451,7 @@ def main(graph_path='data.json', query_graph='graph1', k=1, filterFlag=1, commen
     min_Vk_Score = -1
     if commend == 1:  # 命令行运行
         k = 1  # 自定义
-        graph_path = 'qian.json'
+        graph_path = './static/5k9k.json'
         query_graph = "graph1"
         filterFlag = True
         opts, args = getopt.getopt(sys.argv[1:], 'hg:q:k:f:')
